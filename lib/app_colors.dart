@@ -11,3 +11,7 @@ class AppColors {
   static var myColorIcon = const Color.fromARGB(255, 151, 151, 151);
   static var myColorActiveIcon = const Color.fromARGB(255, 250, 182, 55);
 }
+
+Color hexToColor(String code) {
+  return Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
+}

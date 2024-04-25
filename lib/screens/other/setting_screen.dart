@@ -39,7 +39,7 @@ class _SettingScreenState extends State<SettingScreen>
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.normal,
               fontSize: 20,
               color: AppColors.myColorBlack),
         ),
