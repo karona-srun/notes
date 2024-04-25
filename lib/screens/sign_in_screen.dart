@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app_colors.dart';
 import 'main_screen.dart';
@@ -56,6 +57,9 @@ class _SignInScreenState extends State<SignInScreen> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: hexToColor('#f2f2ff'),//bottom bar icons
+    ),
       ),
       backgroundColor: const Color.fromRGBO(242, 242, 255, 1.000),
       body: SingleChildScrollView(

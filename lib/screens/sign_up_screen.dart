@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:notes/screens/email_verification_screen.dart';
 
 import '../app_colors.dart';
@@ -64,6 +65,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: hexToColor('#ffffff'),//bottom bar icons
+    ),
       ),
       backgroundColor: AppColors.myColorBackground,
       body: SingleChildScrollView(
@@ -94,7 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fontFamily: "Hanuman",
                           color: Colors.amber[600],
                           fontSize: 24,
-                          fontWeight: FontWeight.bold),
+                          fontWeight: FontWeight.normal),
                     ),
                   ),
                   Container(

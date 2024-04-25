@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notes/screens/transation_screen.dart';
 import '../app_colors.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
@@ -17,7 +18,8 @@ class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   bool keyboardOpen = false;
   final List<Widget> _tabs = [
-    const HomeScreen(),
+    // const HomeScreen(),
+    const TransationScreen(),
     const TakeNoteScreen(),
     const ProfileScreen(),
   ];

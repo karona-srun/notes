@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:notes/firebase_options.dart';
 import 'package:notes/screens/main_screen.dart';
 
@@ -22,7 +23,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyWidget());
+  initializeDateFormatting().then((_) => runApp(const MyWidget()));
 }
 
 class MyWidget extends StatefulWidget {

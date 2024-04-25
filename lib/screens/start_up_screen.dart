@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:notes/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,16 +103,24 @@ class _StartUpScreenState extends State<StartUpScreen> {
     }
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.myColorTittle,
+        backgroundColor: hexToColor('#fefcfe'),
         centerTitle: true,
         scrolledUnderElevation: 0.0,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: SystemUiOverlayStyle(
+      statusBarColor: Colors.black.withOpacity(0), //top bar color
+      statusBarIconBrightness: Brightness.dark, //top bar icons
+      systemNavigationBarColor: hexToColor('#fefcfe'), //bottom bar color
+      systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
+    ),
       ),
-      backgroundColor: AppColors.myColorBackground,
+      backgroundColor: hexToColor('#fefcfe'),
       body: SingleChildScrollView(
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Container(
@@ -123,7 +132,7 @@ class _StartUpScreenState extends State<StartUpScreen> {
               Container(
                   margin: const EdgeInsets.all(0.0),
                   width: MediaQuery.of(context).size.width - 100,
-                  child: Image.asset("assets/images/concept_set_up.png")),
+                  child: Image.asset("assets/images/icon/ana.gif")),
               Container(
                 margin: const EdgeInsets.only(top: 20.0, bottom: 10),
                 width: MediaQuery.of(context).size.width - 50,

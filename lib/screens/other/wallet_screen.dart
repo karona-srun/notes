@@ -23,7 +23,7 @@ class _WalletScreenState extends State<WalletScreen> {
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.normal,
               fontSize: 20,
               color: AppColors.myColorBlack),
         ),

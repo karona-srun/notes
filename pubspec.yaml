@@ -45,10 +45,15 @@ dependencies:
   firebase_auth: ^4.19.2
   toasty_snackbar: ^0.0.1
   quickalert: ^1.1.0
-  dart_format: ^1.1.17
+  dart_format: ^0.0.4
   cloud_firestore: ^4.16.1
   firebase_database: ^10.5.2
   shared_preferences: ^2.2.3
+  table_calendar: ^3.1.1
+  price_converter: ^0.0.2
+  units_converter: ^3.0.0
+  flutter_dash: ^1.0.0
+  decorated_dropdownbutton: ^0.0.3
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +81,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/icon/
+    - assets/images/types/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
