@@ -112,6 +112,11 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
       "value": "work",
       "name": "ការងារ",
       "icon": "work",
+    },
+    {
+      "value": "trip",
+      "name": "កាធ្វើដំណើរ",
+      "icon": "trip",
     }
   ];
 
@@ -258,7 +263,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(
+                 const SizedBox(
                   height: 10,
                 ),
                 SizedBox(

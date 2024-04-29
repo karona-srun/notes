@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -31,6 +35,7 @@ class _TransationScreenState extends State<TransationScreen> {
   Map<dynamic, dynamic> sumByType = {};
   String labelFromDate = '';
   String labelToDate = '';
+  Map<String, List<dynamic>> _groupedItems = {};
 
   @override
   void initState() {
@@ -48,9 +53,10 @@ class _TransationScreenState extends State<TransationScreen> {
       if (snapshotValue != null && snapshotValue is Map) {
         setState(() {
           itemList = _sortItems(snapshotValue);
+          _groupedItems = _groupItemsByDate(snapshotValue);
+          // print('_groupedItems $_groupedItems');
           labelFromDate = itemList.first['pickupDate'].toString();
           labelToDate = itemList.last['pickupDate'].toString();
-          ;
           sumByType = _calculateSumByType(itemList.toList());
 
           totalIncome = sumByType["ចំណូល"]?.toString() ?? '0.0';
@@ -66,6 +72,41 @@ class _TransationScreenState extends State<TransationScreen> {
         }
       }
     });
+  }
+
+  Map<String, List<dynamic>> _groupItemsByDate(Map<dynamic, dynamic> items) {
+    Map<String, List<dynamic>> groupedItems = {};
+
+    items.forEach((key, value) {
+      String pickupDate = value['pickupDate'].toString();
+      if (!groupedItems.containsKey(pickupDate)) {
+        groupedItems[pickupDate] = [];
+      }
+      groupedItems[pickupDate]!.add(value);
+    });
+
+    if (kDebugMode) {
+      print('groupedItems $groupedItems');
+    }
+
+    // Sort the keys (dates)
+    List<String> sortedDates = groupedItems.keys.toList()
+      ..sort((a, b) {
+        DateTime dateA = _parseDateString(a);
+        DateTime dateB = _parseDateString(b);
+        return dateB.compareTo(dateA);
+      });
+
+    // Reconstruct the sorted JSON data
+    Map<String, List<dynamic>> sortedJsonData = {};
+    sortedDates.forEach((date) {
+      sortedJsonData[date] = groupedItems[date]!;
+    });
+
+    if (kDebugMode) {
+      print('sortedJsonData $sortedJsonData');
+    }
+    return sortedJsonData;
   }
 
   List<dynamic> _sortItems(Map<dynamic, dynamic> snapshotValue) {
@@ -249,8 +290,6 @@ class _TransationScreenState extends State<TransationScreen> {
       },
     );
   }
-
-  void convert() async {}
 
   showAlertDialogExchangeRate(
       BuildContext context, String heading, double size) {
@@ -666,219 +705,204 @@ class _TransationScreenState extends State<TransationScreen> {
                 ),
               ),
               Flexible(
-                child: ListView(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 2, left: 5, right: 5),
-                      width: MediaQuery.of(context).size.width,
-                      child: Dash(
-                          direction: Axis.horizontal,
-                          length: size - 30,
-                          dashLength: 2,
-                          dashGap: 3,
-                          dashColor: Colors.grey,
-                          dashBorderRadius: 4,
-                          dashThickness: 2),
-                    ),
-                    Row(
+                child: ListView.builder(
+                  itemCount: _groupedItems.length,
+                  itemBuilder: (context, index) {
+                    String date = _groupedItems.keys.elementAt(index);
+                    List<dynamic> items = _groupedItems[date]!;
+                    return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 10.0, bottom: 5),
-                          child: Text(
-                            ' បញ្ជីប្រតិបត្តិការ: ',
-                            style: TextStyle(
-                              fontFamily: 'Hanuman',
-                              fontWeight: FontWeight.normal,
-                              fontSize: 14.0,
-                            ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              top: 5, left: 5, right: 5, bottom: 5),
+                          width: MediaQuery.of(context).size.width,
+                          child: Dash(
+                              direction: Axis.horizontal,
+                              length: size - 30,
+                              dashLength: 2,
+                              dashGap: 3,
+                              dashColor: Colors.grey,
+                              dashBorderRadius: 4,
+                              dashThickness: 2),
+                        ),
+                        Text(
+                          ' បញ្ជីប្រតិបត្តិការ: $date',
+                          style: TextStyle(
+                            fontFamily: 'Hanuman',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14.0,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 13.0),
-                          child: Text(
-                            labelFromDate,
-                            style: const TextStyle(
-                              fontFamily: 'Hanuman',
-                              fontWeight: FontWeight.normal,
-                              fontSize: 10.0,
-                            ),
-                          ),
+                        Container(
+                          margin:
+                              const EdgeInsets.only(top: 2, left: 5, right: 5),
+                          width: MediaQuery.of(context).size.width,
+                          child: Dash(
+                              direction: Axis.horizontal,
+                              length: size - 30,
+                              dashLength: 2,
+                              dashGap: 3,
+                              dashColor: Colors.grey,
+                              dashBorderRadius: 4,
+                              dashThickness: 2),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 13.0),
-                          child: Icon(
-                            Icons.arrow_right,
-                            size: 12,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 13.0),
-                          child: Text(
-                            labelToDate,
-                            style: const TextStyle(
-                              fontFamily: 'Hanuman',
-                              fontWeight: FontWeight.normal,
-                              fontSize: 10.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          top: 2, bottom: 10, left: 5, right: 5),
-                      width: MediaQuery.of(context).size.width,
-                      child: Dash(
-                          direction: Axis.horizontal,
-                          length: size - 30,
-                          dashLength: 2,
-                          dashGap: 3,
-                          dashColor: Colors.grey,
-                          dashBorderRadius: 4,
-                          dashThickness: 2),
-                    ),
-                    ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      primary: false,
-                      itemCount: itemList.length,
-                      itemBuilder: (ctx, i) {
-                        return GestureDetector(
-                          onTap: () {
-                            if (kDebugMode) {
-                              print(
-                                  "Click item ${itemList.elementAt(i)['amount'].toString()}");
-                            }
-                          },
-                          child: Container(
-                            margin: EdgeInsets.zero,
-                            child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: <Widget>[
-                                          Container(
-                                            margin: const EdgeInsets.only(
-                                                left: 5, right: 10, bottom: 10),
-                                            child: Image.asset(
-                                              "assets/images/types/${itemList.elementAt(i)['category']}.png",
-                                              width: 24,
-                                            ),
-                                          ),
-                                          Container(
-                                            child: Column(
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: items.length,
+                          itemBuilder: (context, itemIndex) {
+                            // Customize the item UI as per your requirement
+                            return GestureDetector(
+                              onTap: () {
+                                if (kDebugMode) {
+                                  print(
+                                      "Click item ${items[itemIndex]['amount'].toString()}");
+                                }
+                              },
+                              child: Container(
+                                margin: EdgeInsets.zero,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
+                                                  MainAxisAlignment.spaceAround,
+                                              children: <Widget>[
                                                 Container(
                                                   margin: const EdgeInsets.only(
-                                                      left: 5, right: 5),
-                                                  child: Text(
-                                                    itemList
-                                                        .elementAt(i)['amount']
-                                                        .toString(),
-                                                    style: const TextStyle(
-                                                        fontSize: 18.0,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                        fontFamily: 'Hanuman'),
+                                                      left: 5,
+                                                      right: 10,
+                                                      bottom: 10),
+                                                  child: Image.asset(
+                                                    "assets/images/types/${items[itemIndex]['category']}.png",
+                                                    width: 24,
                                                   ),
                                                 ),
-                                                Text(
-                                                  itemList
-                                                      .elementAt(i)['type']
-                                                      .toString(),
-                                                  style: TextStyle(
-                                                      color: itemList
-                                                                  .elementAt(
-                                                                      i)['type']
-                                                                  .toString() ==
-                                                              "ចំណាយ"
-                                                          ? Colors.red
-                                                          : Colors.green,
-                                                      fontSize: 12.0,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      fontFamily: 'Hanuman'),
+                                                Container(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Container(
+                                                        margin: const EdgeInsets
+                                                            .only(
+                                                            left: 5, right: 5),
+                                                        child: Text(
+                                                          items[itemIndex]
+                                                                  ['amount']
+                                                              .toString(),
+                                                          style: const TextStyle(
+                                                              fontSize: 18.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal,
+                                                              fontFamily:
+                                                                  'Hanuman'),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        items[itemIndex]['type']
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                            color: items[itemIndex]
+                                                                            [
+                                                                            'type']
+                                                                        .toString() ==
+                                                                    "ចំណាយ"
+                                                                ? Colors.red
+                                                                : Colors.green,
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontFamily:
+                                                                'Hanuman'),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.zero,
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
                                             Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 5, right: 5),
-                                              child: Text(
-                                                itemList
-                                                    .elementAt(i)['pickupDate']
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 10.0,
-                                                    fontFamily: 'Hanuman'),
-                                              ),
-                                            ),
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 5, right: 5),
-                                              child: Text(
-                                                itemList
-                                                    .elementAt(i)['remark']
-                                                    .toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 10.0,
-                                                    fontFamily: 'Hanuman'),
+                                              margin: EdgeInsets.zero,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 5, right: 5),
+                                                    child: Text(
+                                                      items[itemIndex]
+                                                              ['pickupDate']
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                          fontSize: 10.0,
+                                                          fontFamily:
+                                                              'Hanuman'),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            left: 5, right: 5),
+                                                    child: Text(
+                                                      items[itemIndex]['remark']
+                                                          .toString(),
+                                                      style: const TextStyle(
+                                                          fontSize: 10.0,
+                                                          fontFamily:
+                                                              'Hanuman'),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                      ],
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          top: 2,
+                                          bottom: 10,
+                                          left: 5,
+                                          right: 5),
+                                      width: MediaQuery.of(context).size.width,
+                                      child: Dash(
+                                          direction: Axis.horizontal,
+                                          length: size - 30,
+                                          dashLength: 2,
+                                          dashGap: 3,
+                                          dashColor: Colors.grey,
+                                          dashBorderRadius: 4,
+                                          dashThickness: 2),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    top: 2, bottom: 10, left: 5, right: 5),
-                                width: MediaQuery.of(context).size.width,
-                                child: Dash(
-                                    direction: Axis.horizontal,
-                                    length: size - 30,
-                                    dashLength: 2,
-                                    dashGap: 3,
-                                    dashColor: Colors.grey,
-                                    dashBorderRadius: 4,
-                                    dashThickness: 2),
-                              ),
-                            ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               const SizedBox(
