@@ -54,6 +54,9 @@ dependencies:
   units_converter: ^3.0.0
   flutter_dash: ^1.0.0
   decorated_dropdownbutton: ^0.0.3
+  beautiful_alert_dialog: ^0.0.7
+  khmer_date: ^0.0.3
+  datepicker_dropdown: ^0.1.0
 
 dev_dependencies:
   flutter_test:

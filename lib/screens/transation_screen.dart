@@ -1,16 +1,18 @@
 import 'dart:convert';
-
+import 'package:datepicker_dropdown/datepicker_dropdown.dart';
+import 'package:datepicker_dropdown/order_format.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:intl/intl.dart';
+import 'package:khmer_date/khmer_date.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../app_colors.dart';
+import 'package:http/http.dart' as http;
+import '../utils/utils.dart';
 
 class TransationScreen extends StatefulWidget {
   const TransationScreen({super.key});
@@ -26,24 +28,98 @@ class _TransationScreenState extends State<TransationScreen> {
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  // DateTime? _selectedDay;
+
+  late final ValueNotifier<List<Event>> _selectedEvents;
+  String khr = '0';
+  String _date = "";
+  bool isLoading = true;
   final kToday = DateTime.now();
   final kFirstDay = DateTime(DateTime.now().day);
   final kLastDay = DateTime(DateTime.now().day);
   Iterable itemList = [];
   int messageCount = 0;
   Map<dynamic, dynamic> sumByType = {};
-  String labelFromDate = '';
-  String labelToDate = '';
   Map<String, List<dynamic>> _groupedItems = {};
+  DateTime now = DateTime.now();
+
+  AutovalidateMode _autovalidate = AutovalidateMode.disabled;
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  var getMonthFormatter = DateFormat('MM');
+  var getYearFormatter = DateFormat('yyyy');
+
+  DateTime startDate = DateTime.now();
+  DateTime endDate = DateTime.now();
+  List months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'April',
+    'May',
+    'Jun',
+    'July',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec'
+  ];
+  int _selectedMonth = 10;
+  int _selectedYear = 1993;
 
   @override
   void initState() {
-    _getDataFromNotes();
+    isLoading = false;
+    _fetchExchangeRate();
+    String month = getMonthFormatter.format(now);
+    String year = getYearFormatter.format(now);
+    _selectedMonth = int.parse(month);
+    _selectedYear = int.parse(year);
+    setState(() {
+      startDate = DateTime(_selectedYear, _selectedMonth, 1);
+      endDate = DateTime(_selectedYear, _selectedMonth + 1, 0);
+      if (kDebugMode) {
+        print('${startDate} ${endDate}');
+      }
+    });
+    _getDataFromNotes(startDate, endDate);
     super.initState();
   }
 
-  void _getDataFromNotes() {
+  @override
+  void dispose() {
+    _selectedEvents.dispose();
+    super.dispose();
+  }
+
+  void _fetchExchangeRate() async {
+    final response = await http.get(
+      Uri.parse(
+          'https://api.apilayer.com/exchangerates_data/convert?to=KHR&from=USD&amount=1'),
+      headers: {
+        'Content-Type': 'text/plain',
+        'apikey': 'Q3Tst29OtGyrmDrH43kqbIXHOMGdQOR1',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      var result = jsonDecode(response.body);
+      setState(() {
+        khr = result['result'].toStringAsFixed(2).toString();
+        _date = KhmerDate.date(DateTime.now().toIso8601String(),
+            format: "ថ្ងៃdddd ទីdd ខែmmm ឆ្នាំyyyy");
+      });
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  void _getDataFromNotes(DateTime start_date, DateTime end_date) {
     DatabaseReference starCountRef = FirebaseDatabase.instance
         .ref("users-${FirebaseAuth.instance.currentUser?.uid}");
 
@@ -52,19 +128,15 @@ class _TransationScreenState extends State<TransationScreen> {
 
       if (snapshotValue != null && snapshotValue is Map) {
         setState(() {
-          itemList = _sortItems(snapshotValue);
-          _groupedItems = _groupItemsByDate(snapshotValue);
-          // print('_groupedItems $_groupedItems');
-          labelFromDate = itemList.first['pickupDate'].toString();
-          labelToDate = itemList.last['pickupDate'].toString();
-          sumByType = _calculateSumByType(itemList.toList());
+          _groupedItems =
+              _groupItemsByDate(snapshotValue, start_date, end_date);
+          sumByType = _calculateSumByType(_groupedItems.values.toList());
 
           totalIncome = sumByType["ចំណូល"]?.toString() ?? '0.0';
           totalExpense = sumByType["ចំណាយ"]?.toString() ?? '0.0';
 
-          double income = sumByType["ចំណូល"] ?? 0.0;
-          double expenses = sumByType["ចំណាយ"] ?? 0.0;
-          totalAmount = (income - expenses).toString();
+          totalAmount = (double.parse(totalIncome) - double.parse(totalExpense))
+              .toString();
         });
       } else {
         if (kDebugMode) {
@@ -74,7 +146,11 @@ class _TransationScreenState extends State<TransationScreen> {
     });
   }
 
-  Map<String, List<dynamic>> _groupItemsByDate(Map<dynamic, dynamic> items) {
+  Map<String, List<dynamic>> _groupItemsByDate(
+    Map<dynamic, dynamic> items,
+    DateTime startDate,
+    DateTime endDate,
+  ) {
     Map<String, List<dynamic>> groupedItems = {};
 
     items.forEach((key, value) {
@@ -85,40 +161,26 @@ class _TransationScreenState extends State<TransationScreen> {
       groupedItems[pickupDate]!.add(value);
     });
 
-    if (kDebugMode) {
-      print('groupedItems $groupedItems');
-    }
+    // Filter items within the date range
+    groupedItems.removeWhere((date, items) {
+      DateTime currentDate = _parseDateString(date);
+      return !(currentDate.isAfter(startDate) &&
+              currentDate.isBefore(endDate)) &&
+          !currentDate.isAtSameMomentAs(startDate) &&
+          !currentDate.isAtSameMomentAs(endDate);
+    });
 
-    // Sort the keys (dates)
     List<String> sortedDates = groupedItems.keys.toList()
       ..sort((a, b) {
         DateTime dateA = _parseDateString(a);
         DateTime dateB = _parseDateString(b);
         return dateB.compareTo(dateA);
       });
-
-    // Reconstruct the sorted JSON data
     Map<String, List<dynamic>> sortedJsonData = {};
     sortedDates.forEach((date) {
       sortedJsonData[date] = groupedItems[date]!;
     });
-
-    if (kDebugMode) {
-      print('sortedJsonData $sortedJsonData');
-    }
     return sortedJsonData;
-  }
-
-  List<dynamic> _sortItems(Map<dynamic, dynamic> snapshotValue) {
-    List<dynamic> userList = snapshotValue.values.toList();
-
-    userList.sort((a, b) {
-      var dateA = _parseDateString(a['pickupDate'].toString());
-      var dateB = _parseDateString(b['pickupDate'].toString());
-      return dateA.compareTo(dateB);
-    });
-
-    return userList;
   }
 
   DateTime _parseDateString(String dateString) {
@@ -128,167 +190,142 @@ class _TransationScreenState extends State<TransationScreen> {
 
   Map<String, double> _calculateSumByType(List<dynamic> itemList) {
     Map<String, double> sumByType = {};
-
-    for (var transaction in itemList) {
-      var type = transaction["type"];
-      var amount = double.tryParse(transaction["amount"].toString());
-
-      if (type != null && amount != null) {
-        sumByType.update(type, (value) => value + amount,
-            ifAbsent: () => amount);
+    for (var group in itemList.toList()) {
+      for (var item in group) {
+        String itemType = item['type'];
+        try {
+          double itemAmount = double.parse(item['amount']);
+          sumByType[itemType] = (sumByType[itemType] ?? 0) + itemAmount;
+        } catch (e) {
+          print("Error parsing amount for item: $item");
+          // Handle the error as needed, for example:
+          // log the error, skip the item, or assign a default value
+        }
       }
     }
-
     return sumByType;
   }
 
   showAlertDialog(BuildContext context, String message, String heading,
       String buttonAcceptTitle, String buttonCancelTitle) {
     return showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          scrollable: true,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(7.0)),
-          ),
-          surfaceTintColor: Colors.white,
-          title: Text(
-            heading,
-            style: const TextStyle(
-              fontFamily: 'Hanuman',
-              fontSize: 20,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            scrollable: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(7.0)),
             ),
-          ),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 355,
-            child: TableCalendar(
-              locale: 'KM',
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
-              focusedDay: _focusedDay,
-              weekNumbersVisible: false,
-              rowHeight: 45.0,
-              daysOfWeekHeight: 20.0,
-              formatAnimationCurve: Curves.easeOutSine,
-              startingDayOfWeek: StartingDayOfWeek.monday,
-              calendarStyle: const CalendarStyle(
-                isTodayHighlighted: true,
-                markerDecoration: BoxDecoration(
-                    color: Color(0xFF263238), shape: BoxShape.rectangle),
-                todayTextStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold),
-                todayDecoration: BoxDecoration(
-                    color: Colors.green, shape: BoxShape.rectangle),
-                holidayTextStyle:
-                    TextStyle(color: Color.fromARGB(255, 192, 122, 92)),
-                holidayDecoration: BoxDecoration(
-                    border: Border.fromBorderSide(
-                        BorderSide(color: Color(0xFF9FA8DA), width: 1.4)),
-                    shape: BoxShape.circle),
+            surfaceTintColor: Colors.white,
+            title: Text(
+              heading,
+              style: const TextStyle(
+                fontFamily: 'Hanuman',
+                fontSize: 20,
               ),
-              daysOfWeekStyle: const DaysOfWeekStyle(
-                  weekdayStyle: TextStyle(
-                    fontFamily: 'Hanuman',
-                    fontSize: 15,
-                  ),
-                  weekendStyle: TextStyle(
-                      fontFamily: 'Hanuman', fontSize: 15, color: Colors.red)),
-              dayHitTestBehavior: HitTestBehavior.translucent,
-              // focusedDay: _focusedDay,
-              calendarFormat: _calendarFormat,
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
-              onDaySelected: (selectedDay, focusedDay) {
-                if (!isSameDay(_selectedDay, selectedDay)) {
-                  // Call `setState()` when updating the selected day
-                  setState(() {
-                    _selectedDay = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                }
-              },
-              onFormatChanged: (format) {
-                if (_calendarFormat != format) {
-                  // Call `setState()` when updating calendar format
-                  setState(() {
-                    _calendarFormat = format;
-                  });
-                }
-              },
-              onPageChanged: (focusedDay) {
-                // No need to call `setState()` here
-                _focusedDay = focusedDay;
-              },
             ),
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 0, right: 15),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.green),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Form(
+                key: formKey,
+                autovalidateMode: _autovalidate,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      DropdownDatePicker(
+                        locale: "en",
+                        dateformatorder: OrderFormat.YDM, // default is myd
+                        inputDecoration: InputDecoration(
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.grey, width: 0.5),
+                            ),
+                            helperText: '',
+                            contentPadding: const EdgeInsets.all(8),
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.circular(5))), // optional
+                        isDropdownHideUnderline: true, // optional
+                        isFormValidator: true, // optional
+                        startYear: 1900, // optional
+                        endYear: 2200, // optional
+                        // width: 50, // optional
+                        // selectedDay: _selectedDay, // optional
+                        selectedMonth: _selectedMonth, // optional
+                        selectedYear: _selectedYear, // optional
+                        // onChangedDay: (value) {
+                        //   _selectedDay = int.parse(value!);
+                        //   print('onChangedDay: $value');
+                        // },
+                        onChangedMonth: (value) {
+                          _selectedMonth = int.parse(value!);
+                          print('onChangedMonth: $value');
+                        },
+                        onChangedYear: (value) {
+                          _selectedYear = int.parse(value!);
+                          print('onChangedYear: $value');
+                        },
+                        // boxDecoration: BoxDecoration(
+                        // border: Border.all(color: Colors.grey, width: 1.0)), // optional
+                        showDay: false, // optional
+                        dayFlex: 2, // optional
+                        // locale: "kh",// optional
+                        // hintDay: 'Day', // optional
+                        hintMonth: 'Month', // optional
+                        hintYear: 'Year', // optional
+                        hintTextStyle:
+                            const TextStyle(color: Colors.grey), // optional
+                      ),
+                      MaterialButton(
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            formKey.currentState!.save();
+                            setState(() {
+                              _selectedMonth = _selectedMonth;
+                              _selectedYear = _selectedYear;
+                              startDate =
+                                  DateTime(_selectedYear, _selectedMonth, 1);
+                              endDate = DateTime(
+                                  _selectedYear, _selectedMonth + 1, 0);
+                              _getDataFromNotes(startDate, endDate);
+                            });
+                            // DateTime? date = _dateTime(
+                            //     _selectedDay, _selectedMonth, _selectedYear);
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(
+                            //     action: SnackBarAction(
+                            //       label: 'OK',
+                            //       onPressed: () {},
+                            //     ),
+                            //     content: Text('selected date is $date'),
+                            //     elevation: 20,
+                            //   ),
+                            // );
+                          } else {
+                            print('on error');
+                            setState(() {
+                              _autovalidate = AutovalidateMode.always;
+                            });
+                          }
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          buttonAcceptTitle,
+                          style: const TextStyle(
+                              fontFamily: 'Hanuman',
+                              fontSize: 16,
+                              color: Colors.black),
                         ),
                       ),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.only(left: 15, right: 15),
-                      child: Text(
-                        buttonAcceptTitle,
-                        style: const TextStyle(
-                            fontFamily: 'Hanuman',
-                            fontSize: 16,
-                            color: Colors.white),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).pop(true);
-                      // true here means you clicked ok
-                    },
+                    ],
                   ),
                 ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.red),
-                    shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                    ),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.only(left: 0, right: 0),
-                    child: Text(
-                      buttonCancelTitle,
-                      style: const TextStyle(
-                          fontFamily: 'Hanuman',
-                          fontSize: 16,
-                          color: Colors.white),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).pop(true);
-                    // true here means you clicked ok
-                  },
-                ),
-              ],
+              ),
             ),
-          ],
-        );
-      },
-    );
+          );
+        });
   }
 
   showAlertDialogExchangeRate(
@@ -303,78 +340,81 @@ class _TransationScreenState extends State<TransationScreen> {
           ),
           surfaceTintColor: Colors.white,
           title: Text(
-            heading,
+            '$heading $_date',
             style: const TextStyle(
               fontFamily: 'Hanuman',
-              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
           ),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextButton.icon(
-                  onPressed: () async {},
-                  style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      )),
-                      backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey[100])),
-                  icon: Image.asset(
-                    "assets/images/icon/us_flag.png",
-                    fit: BoxFit.contain,
-                    height: 24,
-                  ),
-                  label: const Row(
-                    children: [
-                      Text(
-                        "1 ដុល្លា",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontFamily: 'Hanuman',
-                            fontWeight: FontWeight.normal,
-                            fontSize: 16,
-                            color: Colors.black),
+          content: isLoading
+              ? const CircularProgressIndicator() // Show CircularProgressIndicator while loading
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextButton.icon(
+                      onPressed: () async {},
+                      style: ButtonStyle(
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          )),
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.grey[100])),
+                      icon: Image.asset(
+                        "assets/images/icon/us_flag.png",
+                        fit: BoxFit.contain,
+                        height: 24,
                       ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.arrow_right),
-                TextButton.icon(
-                  onPressed: () async {},
-                  style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      )),
-                      backgroundColor:
-                          MaterialStatePropertyAll(Colors.grey[100])),
-                  icon: Image.asset(
-                    "assets/images/icon/kh_flag.png",
-                    fit: BoxFit.contain,
-                    height: 24,
-                  ),
-                  label: const Row(
-                    children: [
-                      Text(
-                        "4000 រៀល",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontFamily: 'Hanuman',
-                            fontWeight: FontWeight.normal,
-                            fontSize: 16,
-                            color: Colors.black),
+                      label: const Row(
+                        children: [
+                          Text(
+                            "1 អាមេរិក (ដុល្លា)",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                fontFamily: 'Hanuman',
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                                color: Colors.black),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () async {},
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStatePropertyAll(Colors.grey[100]),
+                      ),
+                      icon: Image.asset(
+                        "assets/images/icon/kh_flag.png",
+                        fit: BoxFit.contain,
+                        height: 24,
+                      ),
+                      label: Row(
+                        children: [
+                          Text(
+                            "$khr កម្ពុជា​ (រៀល)",
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(
+                                fontFamily: 'Hanuman',
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
         );
       },
     );
@@ -393,27 +433,28 @@ class _TransationScreenState extends State<TransationScreen> {
           backgroundColor: Colors.white,
           elevation: 0.0,
           surfaceTintColor: Colors.transparent,
-          title: Center(
+          title: Container(
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 0),
+              margin: EdgeInsets.symmetric(horizontal: 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   TextButton.icon(
                     onPressed: () async {
+                      _fetchExchangeRate();
                       showAlertDialogExchangeRate(
-                          context, "អត្រាប្តូរប្រាក់", size);
-                      print("weSlide ...............");
+                          context, "អត្រាប្តូរប្រាក់​", size);
                     },
                     style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
-                        )),
-                        backgroundColor: const MaterialStatePropertyAll(
-                            Color.fromARGB(255, 249, 249, 249))),
+                        ),
+                      ),
+                      backgroundColor: const MaterialStatePropertyAll(
+                          Color.fromARGB(255, 249, 249, 249)),
+                    ),
                     icon: Image.asset(
                       "assets/images/icon/web.png",
                       fit: BoxFit.contain,
@@ -427,54 +468,24 @@ class _TransationScreenState extends State<TransationScreen> {
                           style: TextStyle(
                               fontFamily: 'Hanuman',
                               fontWeight: FontWeight.normal,
-                              fontSize: 16,
+                              fontSize: 14,
                               color: Colors.black),
                         ),
                         Icon(Icons.arrow_drop_down)
                       ],
                     ),
                   ),
-                  Container(
-                    child: const Text(
-                      'ប្រតិបត្តិការ',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontFamily: 'Hanuman',
-                          fontWeight: FontWeight.normal,
-                          fontSize: 20,
-                          color: Colors.black),
-                    ),
+                  const Text(
+                    'ប្រតិបត្តិការ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: 'Hanuman',
+                        fontWeight: FontWeight.normal,
+                        fontSize: 20,
+                        color: Colors.black),
                   ),
-                  TextButton.icon(
-                    onPressed: () {
-                      print("weSlide ...............");
-                    },
-                    style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        )),
-                        backgroundColor:
-                            const MaterialStatePropertyAll(Colors.white)),
-                    icon: Image.asset(
-                      "assets/images/icon/web.png",
-                      fit: BoxFit.contain,
-                      height: 20,
-                    ),
-                    label: const Row(
-                      children: [
-                        Text(
-                          "អត្រា",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontFamily: 'Hanuman',
-                              fontWeight: FontWeight.normal,
-                              fontSize: 16,
-                              color: Colors.black),
-                        ),
-                      ],
-                    ),
+                  Container(
+                    width: 100,
                   ),
                 ],
               ),
@@ -489,25 +500,103 @@ class _TransationScreenState extends State<TransationScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              Container(
-                height: 60.0,
-                color: Colors.white,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (kDebugMode) {
-                          print("clicked showAlertDialog()");
-                        }
-                        showAlertDialog(context, 'ជ្រើសរើស', "ជ្រើសរើស",
-                            "យល់ព្រម", "បោះបង់");
-                      },
-                      child: Container(
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  margin: _groupedItems.isEmpty
+                      ? const EdgeInsets.symmetric(horizontal: 25)
+                      : const EdgeInsets.symmetric(horizontal: 0),
+                  height: 60.0,
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (kDebugMode) {
+                            print("clicked showAlertDialog()");
+                          }
+                          showAlertDialog(context, 'ជ្រើសរើស', "ជ្រើសរើស",
+                              "យល់ព្រម", "បោះបង់");
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 0.0),
+                          padding: const EdgeInsets.only(
+                              top: 10, left: 0, right: 10),
+                          child: Column(
+                            children: [
+                              Text(
+                                _selectedYear.toString(),
+                                style: const TextStyle(
+                                    fontFamily: 'Hanuman',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.black),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    months[_selectedMonth - 1],
+                                    style: const TextStyle(
+                                        fontFamily: 'Hanuman',
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                        color: Colors.black),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.zero,
+                                    child:
+                                        const Icon(Icons.arrow_drop_down_sharp),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
                         margin: const EdgeInsets.only(top: 0.0),
                         padding:
-                            const EdgeInsets.only(top: 10, left: 0, right: 10),
+                            const EdgeInsets.only(top: 10, left: 15, right: 15),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: Image.asset(
+                                    'assets/images/icon/income.png',
+                                    width: 24,
+                                  ),
+                                ),
+                                const Text(
+                                  'ចំណូល',
+                                  style: TextStyle(
+                                      fontFamily: 'Hanuman',
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14,
+                                      color: Colors.black),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              totalIncome.toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Hanuman',
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                  color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        // height: 100.0,
+                        margin: const EdgeInsets.only(top: 0.0),
+                        padding:
+                            const EdgeInsets.only(top: 10, left: 15, right: 15),
+                        // width: 150,
                         decoration: const BoxDecoration(
                           border: Border(
                               // left: BorderSide(
@@ -522,43 +611,44 @@ class _TransationScreenState extends State<TransationScreen> {
                         ),
                         child: Column(
                           children: [
-                            const Text(
-                              '2024',
-                              style: TextStyle(
-                                  fontFamily: 'Hanuman',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Colors.black),
-                            ),
                             Row(
                               children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: Image.asset(
+                                    'assets/images/icon/expenses.png',
+                                    width: 24,
+                                  ),
+                                ),
                                 const Text(
-                                  'Apr',
+                                  'ចំណាយ',
                                   style: TextStyle(
                                       fontFamily: 'Hanuman',
                                       fontWeight: FontWeight.normal,
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.black),
                                 ),
-                                Container(
-                                  margin: EdgeInsets.zero,
-                                  child:
-                                      const Icon(Icons.arrow_drop_down_sharp),
-                                ),
                               ],
+                            ),
+                            Text(
+                              totalExpense.toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Hanuman',
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                  color: Colors.black),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    Container(
-                      // height: 100.0,
-                      margin: const EdgeInsets.only(top: 0.0),
-                      padding:
-                          const EdgeInsets.only(top: 10, left: 15, right: 15),
-                      // width: 150,
-                      decoration: const BoxDecoration(
-                        border: Border(
+                      Container(
+                        // height: 100.0,
+                        margin: const EdgeInsets.only(top: 0.0),
+                        padding:
+                            const EdgeInsets.only(top: 10, left: 15, right: 0),
+                        // width: 150,
+                        decoration: const BoxDecoration(
+                            //   border: Border(
                             // left: BorderSide(
                             //   color: Colors.black,
                             //   width: 1.5
@@ -567,343 +657,298 @@ class _TransationScreenState extends State<TransationScreen> {
                             //   color: Colors.black,
                             //   width: 1.5
                             // ),
-                            ),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(right: 5),
-                                child: Image.asset(
-                                  'assets/images/icon/income.png',
-                                  width: 24,
-                                ),
-                              ),
-                              const Text(
-                                'ចំណូល',
-                                style: TextStyle(
-                                    fontFamily: 'Hanuman',
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 14,
-                                    color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            totalIncome.toString(),
-                            style: const TextStyle(
-                                fontFamily: 'Hanuman',
-                                fontWeight: FontWeight.normal,
-                                fontSize: 14,
-                                color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      // height: 100.0,
-                      margin: const EdgeInsets.only(top: 0.0),
-                      padding:
-                          const EdgeInsets.only(top: 10, left: 15, right: 15),
-                      // width: 150,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                            // left: BorderSide(
-                            //   color: Colors.black,
-                            //   width: 1.5
-                            // ),
-                            // right: BorderSide(
-                            //   color: Colors.black,
-                            //   width: 1.5
                             // ),
                             ),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(right: 5),
-                                child: Image.asset(
-                                  'assets/images/icon/expenses.png',
-                                  width: 24,
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: Image.asset(
+                                    'assets/images/icon/wallet.png',
+                                    width: 24,
+                                  ),
                                 ),
-                              ),
-                              const Text(
-                                'ចំណាយ',
-                                style: TextStyle(
-                                    fontFamily: 'Hanuman',
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 14,
-                                    color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            totalExpense.toString(),
-                            style: const TextStyle(
-                                fontFamily: 'Hanuman',
-                                fontWeight: FontWeight.normal,
-                                fontSize: 14,
-                                color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      // height: 100.0,
-                      margin: const EdgeInsets.only(top: 0.0),
-                      padding:
-                          const EdgeInsets.only(top: 10, left: 15, right: 0),
-                      // width: 150,
-                      decoration: const BoxDecoration(
-                          //   border: Border(
-                          // left: BorderSide(
-                          //   color: Colors.black,
-                          //   width: 1.5
-                          // ),
-                          // right: BorderSide(
-                          //   color: Colors.black,
-                          //   width: 1.5
-                          // ),
-                          // ),
-                          ),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(right: 5),
-                                child: Image.asset(
-                                  'assets/images/icon/wallet.png',
-                                  width: 24,
+                                const Text(
+                                  'សរុប',
+                                  style: TextStyle(
+                                      fontFamily: 'Hanuman',
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14,
+                                      color: Colors.black),
                                 ),
-                              ),
-                              const Text(
-                                'សរុប',
-                                style: TextStyle(
-                                    fontFamily: 'Hanuman',
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: 14,
-                                    color: Colors.black),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            totalAmount.toString(),
-                            style: const TextStyle(
-                                fontFamily: 'Hanuman',
-                                fontWeight: FontWeight.normal,
-                                fontSize: 14,
-                                color: Colors.red),
-                          ),
-                        ],
+                              ],
+                            ),
+                            Text(
+                              totalAmount.toString(),
+                              style: const TextStyle(
+                                  fontFamily: 'Hanuman',
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: 14,
+                                  color: Colors.red),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               Flexible(
-                child: ListView.builder(
-                  itemCount: _groupedItems.length,
-                  itemBuilder: (context, index) {
-                    String date = _groupedItems.keys.elementAt(index);
-                    List<dynamic> items = _groupedItems[date]!;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              top: 5, left: 5, right: 5, bottom: 5),
-                          width: MediaQuery.of(context).size.width,
-                          child: Dash(
-                              direction: Axis.horizontal,
-                              length: size - 30,
-                              dashLength: 2,
-                              dashGap: 3,
-                              dashColor: Colors.grey,
-                              dashBorderRadius: 4,
-                              dashThickness: 2),
-                        ),
-                        Text(
-                          ' បញ្ជីប្រតិបត្តិការ: $date',
+                child: _groupedItems.isEmpty
+                    ? Container(
+                        margin: EdgeInsets.symmetric(
+                            vertical: MediaQuery.of(context).size.height / 4),
+                        color: Colors.white,
+                        child: const Text(
+                          'មិនមានទិន្នន័យ​ \nចុច + ដើម្បីចាប់ផ្តើមកត់ត្រាប្រតិបត្តិការ',
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Hanuman',
-                            fontWeight: FontWeight.normal,
-                            fontSize: 14.0,
+                            color: Colors.black,
+                            fontSize: 16,
                           ),
                         ),
-                        Container(
-                          margin:
-                              const EdgeInsets.only(top: 2, left: 5, right: 5),
-                          width: MediaQuery.of(context).size.width,
-                          child: Dash(
-                              direction: Axis.horizontal,
-                              length: size - 30,
-                              dashLength: 2,
-                              dashGap: 3,
-                              dashColor: Colors.grey,
-                              dashBorderRadius: 4,
-                              dashThickness: 2),
-                        ),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: items.length,
-                          itemBuilder: (context, itemIndex) {
-                            // Customize the item UI as per your requirement
-                            return GestureDetector(
-                              onTap: () {
-                                if (kDebugMode) {
-                                  print(
-                                      "Click item ${items[itemIndex]['amount'].toString()}");
-                                }
-                              },
-                              child: Container(
-                                margin: EdgeInsets.zero,
+                      )
+                    : ListView.builder(
+                        itemCount: _groupedItems.length,
+                        itemBuilder: (context, index) {
+                          String date = _groupedItems.keys.elementAt(index);
+                          List<dynamic> items = _groupedItems[date]!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                  color:
+                                      Colors.grey[200], // Set background color
+                                  borderRadius: BorderRadius.circular(
+                                      3.0), // Set border radius
+                                ), // Set background color
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: <Widget>[
-                                                Container(
-                                                  margin: const EdgeInsets.only(
-                                                      left: 5,
-                                                      right: 10,
-                                                      bottom: 10),
-                                                  child: Image.asset(
-                                                    "assets/images/types/${items[itemIndex]['category']}.png",
-                                                    width: 24,
-                                                  ),
-                                                ),
-                                                Container(
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      Container(
-                                                        margin: const EdgeInsets
-                                                            .only(
-                                                            left: 5, right: 5),
-                                                        child: Text(
-                                                          items[itemIndex]
-                                                                  ['amount']
-                                                              .toString(),
-                                                          style: const TextStyle(
-                                                              fontSize: 18.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              fontFamily:
-                                                                  'Hanuman'),
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        items[itemIndex]['type']
-                                                            .toString(),
-                                                        style: TextStyle(
-                                                            color: items[itemIndex]
-                                                                            [
-                                                                            'type']
-                                                                        .toString() ==
-                                                                    "ចំណាយ"
-                                                                ? Colors.red
-                                                                : Colors.green,
-                                                            fontSize: 12.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            fontFamily:
-                                                                'Hanuman'),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.zero,
-                                              child: Column(
+                                  children: <Widget>[
+                                    // Container(
+                                    //   margin: const EdgeInsets.only(
+                                    //       top: 5, left: 5, right: 5, bottom: 5),
+                                    //   width: MediaQuery.of(context).size.width,
+                                    //   child: Dash(
+                                    //       direction: Axis.horizontal,
+                                    //       length: size - 30,
+                                    //       dashLength: 2,
+                                    //       dashGap: 3,
+                                    //       dashColor: Colors.grey,
+                                    //       dashBorderRadius: 4,
+                                    //       dashThickness: 2),
+                                    // ),
+                                    Text(
+                                      ' បញ្ជីប្រតិបត្តិការ: $date',
+                                      style: const TextStyle(
+                                        fontFamily: 'Hanuman',
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14.0,
+                                      ),
+                                    ),
+                                    // Container(
+                                    //   margin: const EdgeInsets.only(
+                                    //       top: 2, left: 5, right: 5, bottom: 5),
+                                    //   width: MediaQuery.of(context).size.width,
+                                    //   child: Dash(
+                                    //       direction: Axis.horizontal,
+                                    //       length: size - 30,
+                                    //       dashLength: 2,
+                                    //       dashGap: 3,
+                                    //       dashColor: Colors.grey,
+                                    //       dashBorderRadius: 4,
+                                    //       dashThickness: 2),
+                                    // ),
+                                  ],
+                                ),
+                              ),
+                              ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: items.length,
+                                itemBuilder: (context, itemIndex) {
+                                  // Customize the item UI as per your requirement
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (kDebugMode) {
+                                        print(
+                                            "Click item ${items[itemIndex]['amount'].toString()}");
+                                      }
+                                    },
+                                    child: Container(
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 30),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                              Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
                                                         .spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.end,
-                                                children: [
-                                                  Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            left: 5, right: 5),
-                                                    child: Text(
-                                                      items[itemIndex]
-                                                              ['pickupDate']
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                          fontSize: 10.0,
-                                                          fontFamily:
-                                                              'Hanuman'),
-                                                    ),
+                                                children: <Widget>[
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: <Widget>[
+                                                      Container(
+                                                        margin: const EdgeInsets
+                                                            .only(
+                                                            left: 5,
+                                                            right: 10,
+                                                            bottom: 10),
+                                                        child: Image.asset(
+                                                          "assets/images/types/${items[itemIndex]['category']}.png",
+                                                          width: 24,
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      left: 5,
+                                                                      right: 5),
+                                                              child: Text(
+                                                                items[itemIndex]
+                                                                        [
+                                                                        'amount']
+                                                                    .toString(),
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                        18.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .normal,
+                                                                    fontFamily:
+                                                                        'Hanuman'),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              items[itemIndex]
+                                                                      ['type']
+                                                                  .toString(),
+                                                              style: TextStyle(
+                                                                  color: items[itemIndex]['type'].toString() ==
+                                                                          "ចំណាយ"
+                                                                      ? Colors
+                                                                          .red
+                                                                      : Colors
+                                                                          .green,
+                                                                  fontSize:
+                                                                      12.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal,
+                                                                  fontFamily:
+                                                                      'Hanuman'),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                   Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            left: 5, right: 5),
-                                                    child: Text(
-                                                      items[itemIndex]['remark']
-                                                          .toString(),
-                                                      style: const TextStyle(
-                                                          fontSize: 10.0,
-                                                          fontFamily:
-                                                              'Hanuman'),
+                                                    margin: EdgeInsets.zero,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        Container(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  left: 5,
+                                                                  right: 5),
+                                                          child: Text(
+                                                            items[itemIndex][
+                                                                    'pickupDate']
+                                                                .toString(),
+                                                            style: const TextStyle(
+                                                                fontSize: 10.0,
+                                                                fontFamily:
+                                                                    'Hanuman'),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          margin:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  left: 5,
+                                                                  right: 5),
+                                                          child: Text(
+                                                            items[itemIndex]
+                                                                    ['remark']
+                                                                .toString(),
+                                                            style: const TextStyle(
+                                                                fontSize: 10.0,
+                                                                fontFamily:
+                                                                    'Hanuman'),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                top: 2,
+                                                bottom: 5,
+                                                left: 0,
+                                                right: 0),
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            child: Dash(
+                                                direction: Axis.horizontal,
+                                                length: (size / 2) + 120,
+                                                dashLength: 2,
+                                                dashGap: 2,
+                                                dashColor: Colors.grey,
+                                                dashBorderRadius: 10,
+                                                dashThickness: 1),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    Container(
-                                      margin: const EdgeInsets.only(
-                                          top: 2,
-                                          bottom: 10,
-                                          left: 5,
-                                          right: 5),
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Dash(
-                                          direction: Axis.horizontal,
-                                          length: size - 30,
-                                          dashLength: 2,
-                                          dashGap: 3,
-                                          dashColor: Colors.grey,
-                                          dashBorderRadius: 4,
-                                          dashThickness: 2),
-                                    ),
-                                  ],
-                                ),
+                                  );
+                                },
                               ),
-                            );
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ),
+                            ],
+                          );
+                        },
+                      ),
               ),
               const SizedBox(
                 height: 20,
@@ -913,5 +958,11 @@ class _TransationScreenState extends State<TransationScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<DateTime>('now', now));
   }
 }
