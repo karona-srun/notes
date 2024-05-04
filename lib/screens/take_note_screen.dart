@@ -1,3 +1,4 @@
+import 'package:beautiful_alert_dialog/beautiful_alert_dialog.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:decorated_dropdownbutton/decorated_dropdownbutton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,6 +27,12 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
   final FocusNode _focusNode = FocusNode();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _typeController = TextEditingController();
+  final TextEditingController _remarkController = TextEditingController();
+  final TextEditingController _pickUpDateController = TextEditingController();
+  final TextEditingController _categoryController = TextEditingController();
+
   String type = '';
   String amount = '';
   String category = 'other';
@@ -33,20 +40,55 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
   final controller = BoardDateTimeController();
   DateTime date = DateTime.now();
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      setState(() {
-        type = _listTextTabToggle[_tabTextIndexSelected];
-      });
-      print('${type} ${amount} ${category} ${pickupDate} ${remark}');
-      saveData(type, amount, category, pickupDate, remark);
-    }
+  void _showDialog(BuildContext context, String title, String msg, int status) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          surfaceTintColor: Colors.white,
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0), // Set border radius
+                    ),
+          title: Row(
+            children: [
+              Container(
+                margin: EdgeInsets.only( right: 10),
+                child: Image.asset("assets/images/icon/icons8-${status == 1 ? 'done':'error'}.gif", width: 32,)
+              ),
+              Text(title,style: TextStyle(fontFamily: 'Hanuman', fontWeight: FontWeight.bold, fontSize: 18)),
+            ],
+          ),
+          content: Text(msg, style: TextStyle(fontFamily: 'Hanuman', fontSize: 16)),
+          actions: <Widget>[
+            Container(
+              height: 40,
+            decoration: BoxDecoration(
+              color: Colors.red, // Set background color
+              borderRadius: BorderRadius.circular(5.0), // Set border radius
+            ),
+            child:TextButton(
+              child: Text("បិទ", style: TextStyle(fontFamily: 'Hanuman', fontSize: 16, color: Colors.white),),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),),
+          ],
+        );
+      },
+    );
   }
 
-  void saveData(String parType, String parAmount, String parCategory,
+  void _validateForm(String parType, String parAmount, String parCategory,
       String parPickupDate, String parRemark) async {
     try {
+      setState(() {
+        parType = parType;
+        parAmount = parAmount;
+        parCategory = parCategory;
+        parPickupDate = parPickupDate;
+        parRemark = parRemark;
+      });
       DatabaseReference ref = FirebaseDatabase.instance
           .ref("users-${FirebaseAuth.instance.currentUser?.uid}");
       DatabaseReference newPostRef = ref.push();
@@ -58,6 +100,14 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
         "remark": parRemark,
       });
       debugPrint('Saved is success');
+      setState(() {
+        type = "";
+        amount = "0";
+        _amountController.clear();
+        category = "other";
+        pickupDate = pickupDate;
+        remark = "";
+      });
     } catch (error) {
       print("Error saving data: $error");
     }
@@ -67,8 +117,11 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
   void initState() {
     super.initState();
     setState(() {
-      pickupDate =
-          BoardDateFormat('dd-MMM-yyyy').format(DateTime.now());
+      _tabTextIndexSelected = 0;
+      val = false;
+      _typeController.text = _listTextTabToggle[_tabTextIndexSelected];
+      _amountController.clear();
+      pickupDate = BoardDateFormat('dd-MMM-yyyy').format(DateTime.now());
     });
   }
 
@@ -186,6 +239,8 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                   onToggle: (index) {
                     setState(() {
                       _tabTextIndexSelected = index!;
+                      _typeController.text =
+                          _listTextTabToggle[_tabTextIndexSelected];
                       type = _listTextTabToggle[_tabTextIndexSelected];
                     });
                     print('switched to: $type');
@@ -226,6 +281,8 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         ),
                         IntrinsicWidth(
                           child: TextFormField(
+                            controller: _amountController,
+                            keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9]')),
@@ -238,12 +295,16 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                                 fontFamily: 'Hanuman',
                                 color: _tabTextIndexSelected == 1 ? red : green,
                                 fontWeight: FontWeight.normal),
-                            keyboardType: TextInputType.name,
                             validator: (value) {
+                              if (value!.isEmpty) {
+                                return null;
+                              }
                               return null;
                             },
                             onSaved: (value) {
-                              amount = value!; // Save the entered email
+                              setState(() {
+                                amount = value!;
+                              });
                             },
                             decoration: InputDecoration(
                               hintText: '0',
@@ -263,61 +324,61 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                     ),
                   ),
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 SizedBox(
-                    height: 50,
-                    child: DecoratedDropdownButton(
-                      value: category,
-                      items: myItems.map((data) {
-                        return DropdownMenuItem<String>(
-                          value: data['value'].toString(),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/images/types/${data['icon']}.png",
-                                width: 24,
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(left: 10),
-                                child: Text(
-                                  data['name'],
-                                  style: const TextStyle(
-                                    fontFamily: 'Hanuman',
-                                    color: Colors.black,
-                                    fontSize: 17,
-                                  ),
+                  height: 50,
+                  child: DecoratedDropdownButton(
+                    value: category,
+                    items: myItems.map((data) {
+                      return DropdownMenuItem<String>(
+                        value: data['value'].toString(),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Image.asset(
+                              "assets/images/types/${data['icon']}.png",
+                              width: 24,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(left: 5),
+                              child: Text(
+                                data['name'],
+                                style: const TextStyle(
+                                  fontFamily: 'Hanuman',
+                                  color: Colors.black,
+                                  fontSize: 17,
                                 ),
                               ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
 
-                      onChanged: (value)  {
-                        setState(() {
-                          category = value.toString();
-                          print("You selected $value");
-                        });
-                      },
-                      color: Colors.grey[100], //background color
-                      border: Border.all(
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          width: 0), //border
-                      borderRadius: BorderRadius.circular(3), //border radius
-                      style: const TextStyle(
-                          //text style
-                          color: Colors.black,
-                          fontSize: 16),
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
+                    onChanged: (value) {
+                      setState(() {
+                        category = value.toString();
+                      });
+                    },
+                    color: Colors.grey[200], //background color
+                    border: Border.all(
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        width: 0), //border
+                    borderRadius: BorderRadius.circular(3), //border radius
+                    style: const TextStyle(
+                        //text style
                         color: Colors.black,
-                      ), //icon
-                      iconEnableColor: Colors.white, //icon enable color
-                      dropdownColor: Colors.white, //dropdown background color
-                    ),
+                        fontSize: 15),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.black,
+                    ), //icon
+                    iconEnableColor: Colors.white, //icon enable color
+                    dropdownColor: Colors.white, //dropdown background color
                   ),
+                ),
                 GestureDetector(
                   onTap: () async {
                     FocusScope.of(context).requestFocus(_focusNode);
@@ -325,19 +386,27 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                       context: context,
                       pickerType: DateTimePickerType.date,
                       initialDate: DateTime.now(),
-                      radius: 10,
-                      options: const BoardDateTimeOptions(
+                      radius: 15,
+                      options: BoardDateTimeOptions(
+                        textColor: Colors.black,
+                        foregroundColor: Colors.green[200],
+                        activeTextColor: Colors.white,
                         backgroundColor: Colors.green,
+                        activeColor: Colors.green,
                         boardTitle: "ជ្រើសរើសកាលបរិច្ឆេទ",
+                        boardTitleTextStyle:
+                            TextStyle(fontFamily: 'Hanuman', fontSize: 16),
                         languages: BoardPickerLanguages(
                           locale: 'km',
                           today: 'ថ្ងៃនេះ',
                           tomorrow: 'ថ្ងៃស្អែក',
                           now: 'ឥឡូវ',
                         ),
-                        showDateButton: true,
+                        showDateButton: false,
                         backgroundDecoration: BoxDecoration(
-                          color: Colors.white,
+                          backgroundBlendMode: BlendMode.screen,
+                          color: Colors.green[100],
+                          shape: BoxShape.rectangle,
                         ),
                         pickerSubTitles: BoardDateTimeItemTitles(
                             year: "ឆ្នាំ",
@@ -345,13 +414,13 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                             day: "ថ្ងៃ",
                             hour: "ម៉ោង",
                             minute: 'នាទី'),
-                        activeColor: Colors.green,
                       ),
                     );
                     if (result != null) {
                       setState(() {
-                        pickupDate = BoardDateFormat('dd-MMM-yyyy')
-                            .format(result);
+                        pickupDate =
+                            BoardDateFormat('dd-MMM-yyyy').format(result);
+                        _pickUpDateController.text = pickupDate;
                       });
                     }
                   },
@@ -359,65 +428,102 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                     height: 50,
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Colors.grey, // specify your color here
-                          width: 1.5, // specify your width here
-                        ),
-                      ),
-                    ),
+                        const EdgeInsets.symmetric(horizontal: 22, vertical: 4),
+                    decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(3)),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Icon(Icons.date_range),
+                          Image.asset(
+                            "assets/images/icon/calendar.png",
+                            width: 22,
+                          ),
                           Text(
-                            "   $pickupDate",
-                            style: const TextStyle(fontSize: 15),
+                            "  $pickupDate",
+                            style: const TextStyle(
+                                fontFamily: 'Hanuman', fontSize: 15),
                           )
                         ]),
                   ),
                 ),
                 Container(
                   height: 50,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   margin: const EdgeInsets.symmetric(vertical: 0.0),
+                  decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(3)),
                   child: TextFormField(
+                    controller: _remarkController,
                     cursorColor: AppColors.myColorGrey_3,
+                    style: TextStyle(fontFamily: 'Hanuman', fontSize: 16),
                     decoration: InputDecoration(
-                      labelText: '',
-                      hintText: 'ការកំណត់ចំណាំរបស់អ្នក',
-                      hintStyle: const TextStyle(color: Colors.amber),
-                      prefixIcon: const Icon(Icons.notes_sharp),
-                      border: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: _tabTextIndexSelected == 1 ? red : green,
-                        ),
-                      ),
-                    ),
+                        border: InputBorder.none,
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        hintText: 'ការកំណត់ចំណាំរបស់អ្នក',
+                        hintStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.grey,
+                            fontFamily: 'Hanuman'),
+                        prefixIcon: Padding(
+                          padding: const EdgeInsets.only(left: 16.0, right: 10),
+                          child: Image.asset(
+                            "assets/images/icon/note.png",
+                            width: 1,
+                            scale: 1,
+                          ), // _myIcon is a 48px-wide widget.
+                        )),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return null;
+                      }
+                      return null;
+                    },
                     onSaved: (value) {
-                      remark = value!;
+                      setState(() {
+                        remark = value!;
+                      });
                     },
                     onTap: () => {print('onTap')},
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(top: 40, bottom: 50),
+                  margin: const EdgeInsets.only(top: 30, bottom: 50),
                   height: 50.0,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _tabTextIndexSelected == 1 ? red : green,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(3),
                         side: BorderSide(
                             color: _tabTextIndexSelected == 1
                                 ? red
                                 : green), // Set border color here
                       ),
                     ),
-                    onPressed: () {
-                      debugPrint('Start saveData');
-                      _submitForm();
+                    onPressed: () async {
+                      
+                      if(_amountController.text.isNotEmpty){
+                        debugPrint('Start saveData ${_amountController.text}');
+                        _validateForm(
+                            _typeController.text,
+                            _amountController.text,
+                            category,
+                            pickupDate,
+                            _remarkController.text);
+                        print('Form is valid');
+                        _showDialog(context, 'ជោគជ័យ',
+                            'ព័ត៍មានរបស់អ្នកត្រូវបានរក្សាដោយជោគជ័យ',1);
+                      } else {
+                        // Form is not valid, do something
+                        print('Form is not valid');
+                        _showDialog(context, 'សារជូនដំណឹង',
+                            'សួមបញ្ចូលព័ត៍មានឲ្យបានត្រឹមត្រូវ!',2);
+                      }
                       debugPrint('End saveData');
                     },
                     child: const Text(
@@ -425,7 +531,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                       style: TextStyle(
                         fontFamily: 'Hanuman',
                         color: Colors.white,
-                        fontSize: 17,
+                        fontSize: 16,
                       ),
                     ),
                   ),
