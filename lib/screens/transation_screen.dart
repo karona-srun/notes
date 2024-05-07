@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:intl/intl.dart';
 import 'package:khmer_date/khmer_date.dart';
+import 'package:notes/screens/update_transaction_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 import '../app_colors.dart';
 import 'package:http/http.dart' as http;
@@ -774,12 +775,12 @@ class _TransationScreenState extends State<TransationScreen> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: items.length,
                                 itemBuilder: (context, itemIndex) {
-                                  // Customize the item UI as per your requirement
-                                  return GestureDetector(
+                                  return InkWell(
                                     onTap: () {
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => UpdateTransctionScreen()));
                                       if (kDebugMode) {
                                         print(
-                                            "Click item ${items[itemIndex]['amount'].toString()}");
+                                            ">>>>>>>>>>>>> Click item ${[itemIndex].toString()}");
                                       }
                                     },
                                     child: Container(

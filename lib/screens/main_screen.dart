@@ -45,33 +45,33 @@ class _MainScreenState extends State<MainScreen> {
           _tabs[_currentIndex],
         ]),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Visibility(
-        visible: !keyboardIsOpen,
-        child: Container(
-          margin: const EdgeInsets.only(top: 0),
-          width: 60,
-          height: 60,
-          child: FloatingActionButton(
-            backgroundColor: Colors.orange,
-            splashColor: Colors.orange,
-            onPressed: () {
-              setState(() {
-                _currentIndex = 1;
-              });
-            },
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-                side: const BorderSide(width: 2, color: Colors.orange),
-                borderRadius: BorderRadius.circular(100)),
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-        ),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: Visibility(
+      //   visible: !keyboardIsOpen,
+      //   child: Container(
+      //     margin: const EdgeInsets.only(top: 0),
+      //     width: 60,
+      //     height: 60,
+      //     child: FloatingActionButton(
+      //       backgroundColor: Colors.orange,
+      //       splashColor: Colors.orange,
+      //       onPressed: () {
+      //         setState(() {
+      //           _currentIndex = 1;
+      //         });
+      //       },
+      //       elevation: 0,
+      //       shape: RoundedRectangleBorder(
+      //           side: const BorderSide(width: 2, color: Colors.orange),
+      //           borderRadius: BorderRadius.circular(100)),
+      //       child: const Icon(
+      //         Icons.add,
+      //         color: Colors.white,
+      //         size: 32,
+      //       ),
+      //     ),
+      //   ),
+      // ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         fixedColor: AppColors.myColorActiveIcon,

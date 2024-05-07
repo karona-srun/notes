@@ -57,6 +57,7 @@ dependencies:
   beautiful_alert_dialog: ^0.0.7
   khmer_date: ^0.0.3
   datepicker_dropdown: ^0.1.0
+  sliding_sheet2: ^2.0.1
 
 dev_dependencies:
   flutter_test:

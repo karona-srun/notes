@@ -4,6 +4,7 @@ import 'package:decorated_dropdownbutton/decorated_dropdownbutton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -48,31 +49,43 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
           surfaceTintColor: Colors.white,
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0), // Set border radius
-                    ),
+            borderRadius: BorderRadius.circular(5.0), // Set border radius
+          ),
           title: Row(
             children: [
               Container(
-                margin: EdgeInsets.only( right: 10),
-                child: Image.asset("assets/images/icon/icons8-${status == 1 ? 'done':'error'}.gif", width: 32,)
-              ),
-              Text(title,style: TextStyle(fontFamily: 'Hanuman', fontWeight: FontWeight.bold, fontSize: 18)),
+                  margin: const EdgeInsets.only(right: 10),
+                  child: Image.asset(
+                    "assets/images/icon/icons8-${status == 1 ? 'done' : 'error'}.gif",
+                    width: 32,
+                  )),
+              Text(title,
+                  style: const TextStyle(
+                      fontFamily: 'Hanuman',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18)),
             ],
           ),
-          content: Text(msg, style: TextStyle(fontFamily: 'Hanuman', fontSize: 16)),
+          content: Text(msg,
+              style: const TextStyle(fontFamily: 'Hanuman', fontSize: 16)),
           actions: <Widget>[
             Container(
               height: 40,
-            decoration: BoxDecoration(
-              color: Colors.red, // Set background color
-              borderRadius: BorderRadius.circular(5.0), // Set border radius
+              decoration: BoxDecoration(
+                color: Colors.red, // Set background color
+                borderRadius: BorderRadius.circular(5.0), // Set border radius
+              ),
+              child: TextButton(
+                child: const Text(
+                  "បិទ",
+                  style: TextStyle(
+                      fontFamily: 'Hanuman', fontSize: 16, color: Colors.white),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
-            child:TextButton(
-              child: Text("បិទ", style: TextStyle(fontFamily: 'Hanuman', fontSize: 16, color: Colors.white),),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),),
           ],
         );
       },
@@ -113,9 +126,13 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
     }
   }
 
+  final FocusNode _focus = FocusNode(); // 1) init _focus
+  TextEditingController textController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    _focus.addListener(_onFocusChange);
     setState(() {
       _tabTextIndexSelected = 0;
       val = false;
@@ -123,6 +140,20 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
       _amountController.clear();
       pickupDate = BoardDateFormat('dd-MMM-yyyy').format(DateTime.now());
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    textController.dispose();
+    _focus
+      ..removeListener(_onFocusChange)
+      ..dispose(); // 3) removeListener and dispose
+  }
+
+// 4)
+  void _onFocusChange() {
+    setState(() {});
   }
 
   final List<Map<String, dynamic>> myItems = [
@@ -147,9 +178,24 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
       "icon": "gasoline",
     },
     {
+      "value": "motorcycle",
+      "name": "ម៉ូតូ",
+      "icon": "motorcycle",
+    },
+    {
+      "value": "car",
+      "name": "ឡាន",
+      "icon": "car",
+    },
+    {
       "value": "health",
       "name": "សុខភាព",
       "icon": "health",
+    },
+    {
+      "value": "home",
+      "name": "ផ្ទះ",
+      "icon": "home",
     },
     {
       "value": "shopping",
@@ -282,12 +328,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         IntrinsicWidth(
                           child: TextFormField(
                             controller: _amountController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                              LengthLimitingTextInputFormatter(10),
-                            ],
+                            keyboardType: TextInputType.numberWithOptions(decimal: true),
                             autofocus: true,
                             focusNode: _focusNode,
                             style: TextStyle(
@@ -394,9 +435,9 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         backgroundColor: Colors.green,
                         activeColor: Colors.green,
                         boardTitle: "ជ្រើសរើសកាលបរិច្ឆេទ",
-                        boardTitleTextStyle:
-                            TextStyle(fontFamily: 'Hanuman', fontSize: 16),
-                        languages: BoardPickerLanguages(
+                        boardTitleTextStyle: const TextStyle(
+                            fontFamily: 'Hanuman', fontSize: 16),
+                        languages: const BoardPickerLanguages(
                           locale: 'km',
                           today: 'ថ្ងៃនេះ',
                           tomorrow: 'ថ្ងៃស្អែក',
@@ -408,7 +449,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                           color: Colors.green[100],
                           shape: BoxShape.rectangle,
                         ),
-                        pickerSubTitles: BoardDateTimeItemTitles(
+                        pickerSubTitles: const BoardDateTimeItemTitles(
                             year: "ឆ្នាំ",
                             month: "ខែ",
                             day: "ថ្ងៃ",
@@ -458,7 +499,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                   child: TextFormField(
                     controller: _remarkController,
                     cursorColor: AppColors.myColorGrey_3,
-                    style: TextStyle(fontFamily: 'Hanuman', fontSize: 16),
+                    style: const TextStyle(fontFamily: 'Hanuman', fontSize: 16),
                     decoration: InputDecoration(
                         border: InputBorder.none,
                         filled: true,
@@ -488,7 +529,11 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         remark = value!;
                       });
                     },
-                    onTap: () => {print('onTap')},
+                    onTap: () {
+                      if (kDebugMode) {
+                        print('onTap');
+                      }
+                    },
                   ),
                 ),
                 Container(
@@ -506,8 +551,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      
-                      if(_amountController.text.isNotEmpty){
+                      if (_amountController.text.isNotEmpty) {
                         debugPrint('Start saveData ${_amountController.text}');
                         _validateForm(
                             _typeController.text,
@@ -517,12 +561,12 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                             _remarkController.text);
                         print('Form is valid');
                         _showDialog(context, 'ជោគជ័យ',
-                            'ព័ត៍មានរបស់អ្នកត្រូវបានរក្សាដោយជោគជ័យ',1);
+                            'ព័ត៍មានរបស់អ្នកត្រូវបានរក្សាដោយជោគជ័យ', 1);
                       } else {
                         // Form is not valid, do something
                         print('Form is not valid');
                         _showDialog(context, 'សារជូនដំណឹង',
-                            'សួមបញ្ចូលព័ត៍មានឲ្យបានត្រឹមត្រូវ!',2);
+                            'សួមបញ្ចូលព័ត៍មានឲ្យបានត្រឹមត្រូវ!', 2);
                       }
                       debugPrint('End saveData');
                     },
