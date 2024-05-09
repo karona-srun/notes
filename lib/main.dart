@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:notes/firebase_options.dart';
-import 'package:notes/screens/main_screen.dart';
 
 import 'app_colors.dart';
+import 'firebase_options.dart';
+import 'screens/main_screen.dart';
 import 'screens/start_up_screen.dart';
 
 Future<void> main() async {

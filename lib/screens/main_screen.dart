@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:notes/screens/transation_screen.dart';
 import '../app_colors.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'take_note_screen.dart';
+import 'transation_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

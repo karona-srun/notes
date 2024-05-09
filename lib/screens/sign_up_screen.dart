@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:notes/screens/email_verification_screen.dart';
 
 import '../app_colors.dart';
+import 'email_verification_screen.dart';
 import 'main_screen.dart';
 
 class SignUpScreen extends StatefulWidget {

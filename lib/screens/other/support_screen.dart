@@ -61,8 +61,9 @@ class _SupportScreenState extends State<SupportScreen> {
                 style: TextStyle(
                     letterSpacing: 0,
                     wordSpacing: 0,
+                    fontFamily: 'Hanuman',
                     fontWeight: FontWeight.w500,
-                    fontSize: 18),
+                    fontSize: 16),
               ),
             ),
           ],

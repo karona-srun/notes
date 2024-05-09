@@ -105,13 +105,16 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
       DatabaseReference ref = FirebaseDatabase.instance
           .ref("users-${FirebaseAuth.instance.currentUser?.uid}");
       DatabaseReference newPostRef = ref.push();
+      String newRecordKey = newPostRef.key.toString();
       newPostRef.set({
+        "id":newRecordKey,
         "type": parType,
         "amount": parAmount,
         "category": parCategory,
         "pickupDate": parPickupDate,
         "remark": parRemark,
       });
+      ref.child(newRecordKey).set(newPostRef);
       debugPrint('Saved is success');
       setState(() {
         type = "";
@@ -148,10 +151,9 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
     textController.dispose();
     _focus
       ..removeListener(_onFocusChange)
-      ..dispose(); // 3) removeListener and dispose
+      ..dispose(); 
   }
 
-// 4)
   void _onFocusChange() {
     setState(() {});
   }

@@ -5,10 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:notes/screens/main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app_colors.dart';
+import 'main_screen.dart';
 import 'sign_in_screen.dart';
 
 class StartUpScreen extends StatefulWidget {
