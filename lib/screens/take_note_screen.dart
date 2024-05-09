@@ -54,16 +54,19 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
           title: Row(
             children: [
               Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  child: Image.asset(
-                    "assets/images/icon/icons8-${status == 1 ? 'done' : 'error'}.gif",
-                    width: 32,
-                  )),
-              Text(title,
-                  style: const TextStyle(
-                      fontFamily: 'Hanuman',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18)),
+                margin: const EdgeInsets.only(right: 10),
+                child: Image.asset(
+                  "assets/images/icon/icons8-${status == 1 ? 'done' : 'error'}.gif",
+                  width: 32,
+                ),
+              ),
+              Text(
+                title,
+                style: const TextStyle(
+                    fontFamily: 'Hanuman',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),
+              ),
             ],
           ),
           content: Text(msg,
@@ -107,7 +110,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
       DatabaseReference newPostRef = ref.push();
       String newRecordKey = newPostRef.key.toString();
       newPostRef.set({
-        "id":newRecordKey,
+        "id": newRecordKey,
         "type": parType,
         "amount": parAmount,
         "category": parCategory,
@@ -151,7 +154,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
     textController.dispose();
     _focus
       ..removeListener(_onFocusChange)
-      ..dispose(); 
+      ..dispose();
   }
 
   void _onFocusChange() {
@@ -330,7 +333,8 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         IntrinsicWidth(
                           child: TextFormField(
                             controller: _amountController,
-                            keyboardType: TextInputType.numberWithOptions(decimal: true),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
                             autofocus: true,
                             focusNode: _focusNode,
                             style: TextStyle(

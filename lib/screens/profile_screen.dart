@@ -25,6 +25,9 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  String _displayName = "UserName";
+  String _email = "example@moneytracker.com";
+  late String _photoURL = "";
 
   Future<void> _handleSignOut() async {
     try {
@@ -40,6 +43,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _displayName = FirebaseAuth.instance.currentUser!.displayName.toString();
+      _email = FirebaseAuth.instance.currentUser!.email.toString();
+      _photoURL = FirebaseAuth.instance.currentUser!.photoURL.toString();
+    });
+    print(FirebaseAuth.instance.currentUser);
   }
 
   @override
@@ -109,19 +118,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               bottom: BorderSide(color: Colors.white),
                             ),
                           ),
-                          child: const Text(
-                            'គណនី',
-                            style: TextStyle(
+                          child: Text(
+                            _displayName,
+                            style: const TextStyle(
                                 fontFamily: 'Hanuman',
                                 color: Colors.white,
                                 fontSize: 17,
                                 fontWeight: FontWeight.w500),
                           ),
                         ),
-                        const Text(
-                          "karonasrun.ks@gmail.com",
+                        Text(
+                          _email,
                           textAlign: TextAlign.left,
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.white,
                               fontSize: 17,
                               fontFamily: 'Hanuman',
@@ -130,7 +139,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ],
                     ),
                   ),
-                  Container(
+                  _photoURL.isNotEmpty ? Container(
+                      alignment: Alignment.centerRight,
+                      margin:
+                          const EdgeInsets.only(top: 0, bottom: 15, right: 20),
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        image: DecorationImage(
+                            image:  NetworkImage(_photoURL),
+                            fit: BoxFit.cover),
+                      ),
+                      child: null): Container(
                       alignment: Alignment.centerRight,
                       margin:
                           const EdgeInsets.only(top: 0, bottom: 15, right: 20),
