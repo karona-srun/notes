@@ -1,27 +1,32 @@
-import 'package:beautiful_alert_dialog/beautiful_alert_dialog.dart';
+import 'dart:async';
+
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:decorated_dropdownbutton/decorated_dropdownbutton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:toggle_switch/toggle_switch.dart';
-import '../app_colors.dart';
 
-class TakeNoteScreen extends StatefulWidget {
-  const TakeNoteScreen({super.key});
+import '../app_colors.dart';
+import 'main_screen.dart';
+
+class UpdateTransctionScreen extends StatefulWidget {
+  final String id;
+  const UpdateTransctionScreen({super.key, required this.id});
 
   @override
-  State<TakeNoteScreen> createState() => _TakeNoteScreenState();
+  State<UpdateTransctionScreen> createState() => _UpdateTransctionScreenState();
 }
 
-class _TakeNoteScreenState extends State<TakeNoteScreen> {
+class _UpdateTransctionScreenState extends State<UpdateTransctionScreen> {
+  Map<String, dynamic> newData = {};
+
   bool val = false;
   late int _tabTextIndexSelected = 0;
   final List<String> _listTextTabToggle = ["ចំណូល", "ចំណាយ"];
-  final String info = "បញ្ជូលពត័មានឱ្យបានត្រឹមត្រូវ \nទើបរក្សាទុកបាន។";
+  final String info = "កែប្រែពត័មានឱ្យបានត្រឹមត្រូវ \nឬក៏ចង់លុបព័ត៍មាន!";
   Color red = Colors.red[800]!;
   Color green = Colors.green;
   String pickupDate = "";
@@ -40,123 +45,6 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
   String remark = '';
   final controller = BoardDateTimeController();
   DateTime date = DateTime.now();
-
-  void _showDialog(BuildContext context, String title, String msg, int status) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          surfaceTintColor: Colors.white,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0), // Set border radius
-          ),
-          title: Row(
-            children: [
-              Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  child: Image.asset(
-                    "assets/images/icon/icons8-${status == 1 ? 'done' : 'error'}.gif",
-                    width: 32,
-                  )),
-              Text(title,
-                  style: const TextStyle(
-                      fontFamily: 'Hanuman',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18)),
-            ],
-          ),
-          content: Text(msg,
-              style: const TextStyle(fontFamily: 'Hanuman', fontSize: 16)),
-          actions: <Widget>[
-            Container(
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.red, // Set background color
-                borderRadius: BorderRadius.circular(5.0), // Set border radius
-              ),
-              child: TextButton(
-                child: const Text(
-                  "បិទ",
-                  style: TextStyle(
-                      fontFamily: 'Hanuman', fontSize: 16, color: Colors.white),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _validateForm(String parType, String parAmount, String parCategory,
-      String parPickupDate, String parRemark) async {
-    try {
-      setState(() {
-        parType = parType;
-        parAmount = parAmount;
-        parCategory = parCategory;
-        parPickupDate = parPickupDate;
-        parRemark = parRemark;
-      });
-      DatabaseReference ref = FirebaseDatabase.instance
-          .ref("users-${FirebaseAuth.instance.currentUser?.uid}");
-      DatabaseReference newPostRef = ref.push();
-      String newRecordKey = newPostRef.key.toString();
-      newPostRef.set({
-        "id":newRecordKey,
-        "type": parType,
-        "amount": parAmount,
-        "category": parCategory,
-        "pickupDate": parPickupDate,
-        "remark": parRemark,
-      });
-      ref.child(newRecordKey).set(newPostRef);
-      debugPrint('Saved is success');
-      setState(() {
-        type = "";
-        amount = "0";
-        _amountController.clear();
-        category = "other";
-        pickupDate = pickupDate;
-        remark = "";
-      });
-    } catch (error) {
-      print("Error saving data: $error");
-    }
-  }
-
-  final FocusNode _focus = FocusNode(); // 1) init _focus
-  TextEditingController textController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _focus.addListener(_onFocusChange);
-    setState(() {
-      _tabTextIndexSelected = 0;
-      val = false;
-      _typeController.text = _listTextTabToggle[_tabTextIndexSelected];
-      _amountController.clear();
-      pickupDate = BoardDateFormat('dd-MMM-yyyy').format(DateTime.now());
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    textController.dispose();
-    _focus
-      ..removeListener(_onFocusChange)
-      ..dispose(); 
-  }
-
-  void _onFocusChange() {
-    setState(() {});
-  }
 
   final List<Map<String, dynamic>> myItems = [
     {
@@ -222,22 +110,99 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
   ];
 
   @override
+  void initState() {
+    fetchRecord(widget.id);
+    super.initState();
+  }
+
+  fetchRecord(String recordId) {
+    DatabaseReference starCountRef = FirebaseDatabase.instance
+        .ref("users-${FirebaseAuth.instance.currentUser?.uid}");
+
+    starCountRef.child(recordId).onValue.listen((DatabaseEvent event) {
+      var snapshotValue = event.snapshot.value;
+
+      if (snapshotValue != null && snapshotValue is Map) {
+        setState(() {
+          _amountController.text = snapshotValue['amount'].toString();
+          category = snapshotValue['category'].toString();
+          _tabTextIndexSelected =
+              (snapshotValue['type'].toString() == "ចំណូល" ? 0 : 1);
+          _typeController.text = _listTextTabToggle[_tabTextIndexSelected];
+          pickupDate = snapshotValue['pickupDate'].toString();
+          _remarkController.text = snapshotValue['remark'].toString();
+        });
+      }
+    });
+  }
+
+  void updateRecord(String recordId, Map<String, dynamic> _newData) {
+    DatabaseReference databaseReference = FirebaseDatabase.instance
+        .ref("users-${FirebaseAuth.instance.currentUser?.uid}");
+
+    print('newData $_newData');
+    databaseReference.child(recordId).once().then((snapshot) {
+      if (snapshot.snapshot.value != null) {
+        // Update the record with new data
+        databaseReference.child(recordId).update(_newData);
+        print('Record updated successfully');
+        Navigator.pushAndRemoveUntil<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(
+              builder: (BuildContext context) => const MainScreen(),
+            ),
+            (route) => false);
+      } else {
+        print('Record not found');
+      }
+    }).catchError((error) {
+      print('Error: $error');
+    });
+  }
+
+  deleteRecord(String recordId) {
+    DatabaseReference databaseReference = FirebaseDatabase.instance
+        .ref("users-${FirebaseAuth.instance.currentUser?.uid}");
+
+    // Reference the specific record by its ID and remove it
+    databaseReference.child(recordId).remove().then((_) {
+      print("Record $recordId deleted successfully");
+      Navigator.pushAndRemoveUntil<dynamic>(
+          context,
+          MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => const MainScreen(),
+          ),
+          (route) => false);
+    }).catchError((error) {
+      print("Error deleting record: $error");
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size.width;
+    double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.myColorTittle,
+        backgroundColor: AppColors.myColorBackground,
         centerTitle: true,
         scrolledUnderElevation: 0.0,
         surfaceTintColor: Colors.transparent,
-        title: Text(
-          'កត់ត្រា',
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: const Text(
+          "ព័ត៍មានលម្អិត",
           textAlign: TextAlign.center,
           style: TextStyle(
-              fontFamily: 'Hanuman',
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: AppColors.myColorBlack),
+            fontSize: 20.0,
+            fontFamily: 'Hanuman',
+            fontWeight: FontWeight.normal,
+            color: Colors.black,
+          ),
+        ),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          systemNavigationBarColor: hexToColor('#f2f2ff'), //bottom bar icons
         ),
       ),
       backgroundColor: AppColors.myColorBackground,
@@ -330,7 +295,8 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         IntrinsicWidth(
                           child: TextFormField(
                             controller: _amountController,
-                            keyboardType: TextInputType.numberWithOptions(decimal: true),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
                             autofocus: true,
                             focusNode: _focusNode,
                             style: TextStyle(
@@ -538,49 +504,73 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                     },
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(top: 30, bottom: 50),
-                  height: 50.0,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: _tabTextIndexSelected == 1 ? red : green,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(3),
-                        side: BorderSide(
-                            color: _tabTextIndexSelected == 1
-                                ? red
-                                : green), // Set border color here
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 30, bottom: 50),
+                      height: 50.0,
+                       width: screenWidth * 0.3,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(3),
+                            side:
+                                BorderSide(color: red), // Set border color here
+                          ),
+                        ),
+                        onPressed: () async {
+                          deleteRecord(widget.id);
+                        },
+                        child: const Text(
+                          'លុប',
+                          style: TextStyle(
+                            fontFamily: 'Hanuman',
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
-                    onPressed: () async {
-                      if (_amountController.text.isNotEmpty) {
-                        debugPrint('Start saveData ${_amountController.text}');
-                        _validateForm(
-                            _typeController.text,
-                            _amountController.text,
-                            category,
-                            pickupDate,
-                            _remarkController.text);
-                        print('Form is valid');
-                        _showDialog(context, 'ជោគជ័យ',
-                            'ព័ត៍មានរបស់អ្នកត្រូវបានរក្សាដោយជោគជ័យ', 1);
-                      } else {
-                        // Form is not valid, do something
-                        print('Form is not valid');
-                        _showDialog(context, 'សារជូនដំណឹង',
-                            'សួមបញ្ចូលព័ត៍មានឲ្យបានត្រឹមត្រូវ!', 2);
-                      }
-                      debugPrint('End saveData');
-                    },
-                    child: const Text(
-                      'រក្សាទុក',
-                      style: TextStyle(
-                        fontFamily: 'Hanuman',
-                        color: Colors.white,
-                        fontSize: 16,
+                    Container(
+                      margin:
+                          const EdgeInsets.only(top: 30, bottom: 50),
+                      height: 50.0,
+                      width: screenWidth * 0.5,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: green,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(3),
+                            side: BorderSide(
+                                color: green), // Set border color here
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (_amountController.text.isNotEmpty) {
+                            newData = {
+                              'amount': _amountController.text,
+                              'pickupDate': pickupDate.toString(),
+                              'remark': _remarkController.text,
+                              'category': category.toString(),
+                              'type': _typeController.text
+                            };
+
+                            updateRecord(widget.id, newData);
+                          }
+                        },
+                        child: const Text(
+                          'រក្សាទុក',
+                          style: TextStyle(
+                            fontFamily: 'Hanuman',
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),

@@ -116,6 +116,10 @@ class _HomeScreenState extends State<HomeScreen> {
               fontSize: 20,
               color: AppColors.myColorBlack),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       backgroundColor: AppColors.myColorBackground,
       body: SingleChildScrollView(

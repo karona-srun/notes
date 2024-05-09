@@ -13,6 +13,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../app_colors.dart';
 import 'package:http/http.dart' as http;
 import '../utils/utils.dart';
+import 'update_transaction_screen.dart';
 
 class TransationScreen extends StatefulWidget {
   const TransationScreen({super.key});
@@ -135,8 +136,7 @@ class _TransationScreenState extends State<TransationScreen> {
           totalIncome = sumByType["ចំណូល"]?.toString() ?? '0.0';
           totalExpense = sumByType["ចំណាយ"]?.toString() ?? '0.0';
 
-          totalAmount = (double.parse(totalIncome) - double.parse(totalExpense))
-              .toString();
+          totalAmount = (double.parse(totalIncome) - double.parse(totalExpense)).toStringAsFixed(2);
         });
       } else {
         if (kDebugMode) {
@@ -435,7 +435,7 @@ class _TransationScreenState extends State<TransationScreen> {
           surfaceTintColor: Colors.transparent,
           title: Container(
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 0),
+              margin: const EdgeInsets.symmetric(horizontal: 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -721,8 +721,8 @@ class _TransationScreenState extends State<TransationScreen> {
                             children: [
                               Container(
                                 width: MediaQuery.of(context).size.width,
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
                                   color:
                                       Colors.grey[200], // Set background color
@@ -774,24 +774,24 @@ class _TransationScreenState extends State<TransationScreen> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: items.length,
                                 itemBuilder: (context, itemIndex) {
-                                  // Customize the item UI as per your requirement
-                                  return GestureDetector(
+                                  return InkWell(
                                     onTap: () {
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => UpdateTransctionScreen(id: items[itemIndex]['id'].toString(),)));
                                       if (kDebugMode) {
                                         print(
-                                            "Click item ${items[itemIndex]['amount'].toString()}");
+                                            ">>>>>>>>>>>>> Click item ${items[itemIndex]['id'].toString()}");
                                       }
                                     },
                                     child: Container(
                                       margin:
-                                          EdgeInsets.symmetric(horizontal: 30),
+                                          const EdgeInsets.symmetric(horizontal: 30),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          SizedBox(
+                                          const SizedBox(
                                             height: 5,
                                           ),
                                           Column(
