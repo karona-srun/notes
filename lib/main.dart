@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'app_colors.dart';
@@ -20,10 +21,17 @@ Future<void> main() async {
     ),
   );
   WidgetsFlutterBinding.ensureInitialized();
+  // MobileAds.instance.initialize();
+  MobileAds.instance.initialize()
+    .then((initializationStatus) {
+      initializationStatus.adapterStatuses.forEach((key, value) {
+        print('Adapter status for $key: ${value.description}');
+      });
+  });
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  initializeDateFormatting().then((_) => runApp(const MyWidget()));
+  initializeDateFormatting('en', null).then((_) => runApp(const MyWidget()));
 }
 
 class MyWidget extends StatefulWidget {

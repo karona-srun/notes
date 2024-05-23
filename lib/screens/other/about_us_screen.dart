@@ -27,6 +27,10 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
               fontSize: 20,
               color: AppColors.myColorBlack),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       backgroundColor: AppColors.myColorBackground,
       body: SingleChildScrollView(
@@ -59,9 +63,10 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
               child: const Text(
                 "កត់ត្រាចំណាយ",
                 style: TextStyle(
+                    fontFamily: 'Hanuman',
                     letterSpacing: 0,
                     wordSpacing: 0,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: FontWeight.bold,
                     fontSize: 18),
               ),
             ),
@@ -71,11 +76,12 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
               child: const Text(
                 "កម្មវិធី កំណែៈ V 0.0.10",
                 style: TextStyle(
+                  fontFamily: 'Hanuman',
                     letterSpacing: 0,
                     wordSpacing: 0,
                     color: Colors.grey,
                     fontWeight: FontWeight.w500,
-                    fontSize: 16),
+                    fontSize: 15),
               ),
             ),
           ],

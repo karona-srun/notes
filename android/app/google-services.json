@@ -8,6 +8,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:117639569085:android:78acf5a285e9944135a1d4",
+        "android_client_info": {
+          "package_name": "com.android.moneytracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "117639569085-0nb8lk5tn13uvek6v9q5ca8jjsl4sp1o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaujKZQ1swDHSss0dKTzhz2Ym8v66bWqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117639569085-0nb8lk5tn13uvek6v9q5ca8jjsl4sp1o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "117639569085-2rdlfkrkr6udlsociv0a2i85va35od85.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ks.moneyTracker"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:117639569085:android:318e134297babbe335a1d4",
         "android_client_info": {
           "package_name": "com.example.notes"
@@ -48,10 +84,10 @@
               "client_type": 3
             },
             {
-              "client_id": "117639569085-h87vqrmlqjchaeoe4jlcnu46h824kc4r.apps.googleusercontent.com",
+              "client_id": "117639569085-2rdlfkrkr6udlsociv0a2i85va35od85.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.notes"
+                "bundle_id": "com.ks.moneyTracker"
               }
             }
           ]

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../app_colors.dart';
-import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'take_note_screen.dart';
 import 'transation_screen.dart';

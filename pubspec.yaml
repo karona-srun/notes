@@ -58,6 +58,9 @@ dependencies:
   khmer_date: ^0.0.3
   datepicker_dropdown: ^0.1.0
   sliding_sheet2: ^2.0.1
+  flutter_chart_plus: any
+  flexible_dropdown: ^1.0.4
+  google_mobile_ads: ^5.1.0
 
 dev_dependencies:
   flutter_test:

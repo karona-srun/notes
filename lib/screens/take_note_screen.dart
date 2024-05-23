@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import '../app_colors.dart';
 
@@ -144,7 +145,8 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
       val = false;
       _typeController.text = _listTextTabToggle[_tabTextIndexSelected];
       _amountController.clear();
-      pickupDate = BoardDateFormat('dd-MMM-yyyy').format(DateTime.now());
+      DateFormat.yMMMMd('en').format(DateTime.now());
+      pickupDate = DateFormat('dd-MMM-yyyy').format(DateTime.now());
     });
   }
 
@@ -334,7 +336,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                           child: TextFormField(
                             controller: _amountController,
                             keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
+                                const TextInputType.numberWithOptions(decimal: true),
                             autofocus: true,
                             focusNode: _focusNode,
                             style: TextStyle(
@@ -436,14 +438,13 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                       radius: 15,
                       options: BoardDateTimeOptions(
                         textColor: Colors.black,
-                        foregroundColor: Colors.green[200],
                         activeTextColor: Colors.white,
-                        backgroundColor: Colors.green,
                         activeColor: Colors.green,
+                        backgroundColor: Colors.white,
                         boardTitle: "ជ្រើសរើសកាលបរិច្ឆេទ",
-                        boardTitleTextStyle: const TextStyle(
+                        boardTitleTextStyle: TextStyle(
                             fontFamily: 'Hanuman', fontSize: 16),
-                        languages: const BoardPickerLanguages(
+                        languages: BoardPickerLanguages(
                           locale: 'km',
                           today: 'ថ្ងៃនេះ',
                           tomorrow: 'ថ្ងៃស្អែក',
@@ -451,11 +452,11 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         ),
                         showDateButton: false,
                         backgroundDecoration: BoxDecoration(
-                          backgroundBlendMode: BlendMode.screen,
-                          color: Colors.green[100],
+                          backgroundBlendMode: BlendMode.plus,
+                          color: Colors.white,
                           shape: BoxShape.rectangle,
                         ),
-                        pickerSubTitles: const BoardDateTimeItemTitles(
+                        pickerSubTitles: BoardDateTimeItemTitles(
                             year: "ឆ្នាំ",
                             month: "ខែ",
                             day: "ថ្ងៃ",
@@ -465,8 +466,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                     );
                     if (result != null) {
                       setState(() {
-                        pickupDate =
-                            BoardDateFormat('dd-MMM-yyyy').format(result);
+                        pickupDate = BoardDateFormat('dd-MMM-yyyy').format(result);
                         _pickUpDateController.text = pickupDate;
                       });
                     }

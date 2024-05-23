@@ -72,6 +72,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
+      backgroundColor: AppColors.myColorBackground,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

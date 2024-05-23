@@ -1,5 +1,4 @@
-package io.flutter.app;
-
+package com.android.moneytracker;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.CallSuper;

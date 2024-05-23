@@ -1,14 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:money_tracker/screens/home_screen.dart';
-
-import '../app_colors.dart';
 import 'package:flutter/material.dart';
 
+import 'chart_screen.dart';
 import 'other/about_us_screen.dart';
 import 'other/setting_screen.dart';
 import 'other/support_screen.dart';
@@ -191,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.push<dynamic>(
                         context,
                         MaterialPageRoute<dynamic>(
-                          builder: (BuildContext context) => const HomeScreen(),
+                          builder: (BuildContext context) => const ChartScreen(),
                         ),
                       )
                     },

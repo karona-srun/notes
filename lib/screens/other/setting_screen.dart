@@ -43,6 +43,10 @@ class _SettingScreenState extends State<SettingScreen>
               fontSize: 20,
               color: AppColors.myColorBlack),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       backgroundColor: AppColors.myColorBackground,
       body: SingleChildScrollView(
@@ -66,7 +70,7 @@ class _SettingScreenState extends State<SettingScreen>
                         color: Colors.white,
                       ),
                       child: ListTile(
-                        title: const Text("ផ្តល់មតិយោបល់"),
+                        title: const Text("ផ្តល់មតិយោបល់", style: TextStyle(fontFamily: 'Hanuman'),),
                         leading: Image.asset("assets/images/icon/feedback.png",
                             height: 28, width: 28),
                         onTap: () {
@@ -84,7 +88,7 @@ class _SettingScreenState extends State<SettingScreen>
                         color: Colors.white,
                       ),
                       child: ListTile(
-                        title: const Text("ចែករំលែកកម្មវិធី"),
+                        title: const Text("ចែករំលែកកម្មវិធី", style: TextStyle(fontFamily: 'Hanuman'),),
                         leading: Image.asset("assets/images/icon/share.png",
                             height: 28, width: 28),
                         onTap: () {},
@@ -99,7 +103,7 @@ class _SettingScreenState extends State<SettingScreen>
                         color: Colors.white,
                       ),
                       child: ListTile(
-                        title: const Text("គោលការណ៍ឯកជនភាព"),
+                        title: const Text("គោលការណ៍ឯកជនភាព", style: TextStyle(fontFamily: 'Hanuman'),),
                         leading: Image.asset("assets/images/icon/policy.png",
                             height: 28, width: 28),
                         onTap: () {

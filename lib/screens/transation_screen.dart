@@ -136,7 +136,8 @@ class _TransationScreenState extends State<TransationScreen> {
           totalIncome = sumByType["ចំណូល"]?.toString() ?? '0.0';
           totalExpense = sumByType["ចំណាយ"]?.toString() ?? '0.0';
 
-          totalAmount = (double.parse(totalIncome) - double.parse(totalExpense)).toStringAsFixed(2);
+          totalAmount = (double.parse(totalIncome) - double.parse(totalExpense))
+              .toStringAsFixed(2);
         });
       } else {
         if (kDebugMode) {
@@ -221,7 +222,8 @@ class _TransationScreenState extends State<TransationScreen> {
               heading,
               style: const TextStyle(
                 fontFamily: 'Hanuman',
-                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
             content: SizedBox(
@@ -353,66 +355,70 @@ class _TransationScreenState extends State<TransationScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    TextButton.icon(
-                      onPressed: () async {},
-                      style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          )),
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.grey[100])),
-                      icon: Image.asset(
-                        "assets/images/icon/us_flag.png",
-                        fit: BoxFit.contain,
-                        height: 24,
-                      ),
-                      label: const Row(
-                        children: [
-                          Text(
-                            "1 អាមេរិក (ដុល្លា)",
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                                fontFamily: 'Hanuman',
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16,
-                                color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
-                    TextButton.icon(
-                      onPressed: () async {},
-                      style: ButtonStyle(
-                        shape:
-                            MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                        backgroundColor:
-                            MaterialStatePropertyAll(Colors.grey[100]),
-                      ),
-                      icon: Image.asset(
-                        "assets/images/icon/kh_flag.png",
-                        fit: BoxFit.contain,
-                        height: 24,
-                      ),
-                      label: Row(
-                        children: [
-                          Text(
-                            "$khr កម្ពុជា​ (រៀល)",
-                            textAlign: TextAlign.start,
-                            style: const TextStyle(
-                                fontFamily: 'Hanuman',
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16,
-                                color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
+                    Text(
+                      'Coming soon...',
+                      style: TextStyle(fontFamily: 'Hanuman'),
+                    )
+                    // TextButton.icon(
+                    //   onPressed: () async {},
+                    //   style: ButtonStyle(
+                    //       shape:
+                    //           MaterialStateProperty.all<RoundedRectangleBorder>(
+                    //               RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(10.0),
+                    //       )),
+                    //       backgroundColor:
+                    //           MaterialStatePropertyAll(Colors.grey[100])),
+                    //   icon: Image.asset(
+                    //     "assets/images/icon/us_flag.png",
+                    //     fit: BoxFit.contain,
+                    //     height: 24,
+                    //   ),
+                    //   label: const Row(
+                    //     children: [
+                    //       Text(
+                    //         "1 អាមេរិក (ដុល្លា)",
+                    //         textAlign: TextAlign.start,
+                    //         style: TextStyle(
+                    //             fontFamily: 'Hanuman',
+                    //             fontWeight: FontWeight.normal,
+                    //             fontSize: 16,
+                    //             color: Colors.black),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // TextButton.icon(
+                    //   onPressed: () async {},
+                    //   style: ButtonStyle(
+                    //     shape:
+                    //         MaterialStateProperty.all<RoundedRectangleBorder>(
+                    //       RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(10.0),
+                    //       ),
+                    //     ),
+                    //     backgroundColor:
+                    //         MaterialStatePropertyAll(Colors.grey[100]),
+                    //   ),
+                    //   icon: Image.asset(
+                    //     "assets/images/icon/kh_flag.png",
+                    //     fit: BoxFit.contain,
+                    //     height: 24,
+                    //   ),
+                    //   label: Row(
+                    //     children: [
+                    //       Text(
+                    //         "$khr កម្ពុជា​ (រៀល)",
+                    //         textAlign: TextAlign.start,
+                    //         style: const TextStyle(
+                    //             fontFamily: 'Hanuman',
+                    //             fontWeight: FontWeight.normal,
+                    //             fontSize: 16,
+                    //             color: Colors.black),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
         );
@@ -722,7 +728,8 @@ class _TransationScreenState extends State<TransationScreen> {
                               Container(
                                 width: MediaQuery.of(context).size.width,
                                 padding: const EdgeInsets.all(10),
-                                margin: const EdgeInsets.symmetric(horizontal: 10),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
                                   color:
                                       Colors.grey[200], // Set background color
@@ -776,15 +783,21 @@ class _TransationScreenState extends State<TransationScreen> {
                                 itemBuilder: (context, itemIndex) {
                                   return InkWell(
                                     onTap: () {
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => UpdateTransctionScreen(id: items[itemIndex]['id'].toString(),)));
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateTransctionScreen(
+                                                    id: items[itemIndex]['id']
+                                                        .toString(),
+                                                  )));
                                       if (kDebugMode) {
                                         print(
                                             ">>>>>>>>>>>>> Click item ${items[itemIndex]['id'].toString()}");
                                       }
                                     },
                                     child: Container(
-                                      margin:
-                                          const EdgeInsets.symmetric(horizontal: 30),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 30),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,

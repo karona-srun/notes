@@ -27,6 +27,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               fontSize: 20,
               color: AppColors.myColorBlack),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       backgroundColor: AppColors.myColorBackground,
       body: SingleChildScrollView(
@@ -41,6 +45,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   "សរសេរមតិយោបល់របស់អ្នក ឬ ស្នើសុំលក្ខណៈបន្ថែម\nក្នុងកម្មវិធី",
                   overflow: TextOverflow.fade,
                   style: TextStyle(
+                    fontFamily: 'Hanuman',
                       letterSpacing: 0, wordSpacing: -0, fontSize: 18),
                 ),
                 const SizedBox(
@@ -52,11 +57,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   height: 90.0,
                   width: double.infinity,
                   child: TextFormField(
+                    style: TextStyle(
+                          fontFamily: 'Hanuman'
+                        ),
                     keyboardType: TextInputType.multiline,
                     maxLines: 6,
                     autofocus: true,
                     decoration: const InputDecoration(
                         hintText: "សរសេរមតិយោបល់",
+                        hintStyle: TextStyle(
+                          fontFamily: 'Hanuman'
+                        ),
                         enabledBorder: OutlineInputBorder(
                             borderSide:
                                 BorderSide(width: 1, color: Colors.grey)),
@@ -88,6 +99,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
+                        fontFamily: 'Hanuman'
                       ),
                     ),
                   ),
