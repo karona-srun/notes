@@ -21,13 +21,13 @@ Future<void> main() async {
     ),
   );
   WidgetsFlutterBinding.ensureInitialized();
-  // MobileAds.instance.initialize();
-  MobileAds.instance.initialize()
-    .then((initializationStatus) {
-      initializationStatus.adapterStatuses.forEach((key, value) {
-        print('Adapter status for $key: ${value.description}');
-      });
-  });
+  MobileAds.instance.initialize();
+  // MobileAds.instance.initialize()
+  //   .then((initializationStatus) {
+  //     initializationStatus.adapterStatuses.forEach((key, value) {
+  //       print('Adapter status for $key: ${value.description}');
+  //     });
+  // });
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
