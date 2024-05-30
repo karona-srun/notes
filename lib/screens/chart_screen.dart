@@ -20,9 +20,9 @@ class ChartScreen extends StatefulWidget {
 class _ChartScreenState extends State<ChartScreen>
     with SingleTickerProviderStateMixin {
 
-   String testDevice = 'YOUR_DEVICE_ID';
- int maxFailedLoadAttempts = 3;
-
+  String testDevice = 'YOUR_DEVICE_ID';
+  int maxFailedLoadAttempts = 3;
+  String loading = 'loading Ads';
   late AnimationController _animationController;
   var getMonthFormatter = DateFormat('MM');
   var getYearFormatter = DateFormat('yyyy');
@@ -272,6 +272,7 @@ void _createInterstitialAd() {
         onAdLoaded: (_) {
           setState(() {
             _isBottomBannerAdLoaded = true;
+            loading = 'Show Ads';
           });
         },
         onAdFailedToLoad: (ad, error) {
@@ -398,7 +399,6 @@ void _createInterstitialAd() {
                           myDataList: _dataList, refresh: refresh
                         ),
                       ),
-                  Center(child: ElevatedButton(onPressed: _showInterstitialAd, child:const  Text('Show Interstitial Ads')),),
                   
               ],
             ),
@@ -411,7 +411,13 @@ void _createInterstitialAd() {
                 width: _bottomBannerAd.size.width.toDouble(),
                 child: AdWidget(ad: _bottomBannerAd),
               )
-            : null,
+            : TextButton(onPressed: _showInterstitialAd, child: Text(loading, style: TextStyle(
+              fontFamily: 'Hanuman',
+              fontWeight: FontWeight.normal,
+              fontSize: 12,
+              color: AppColors.myColorBlack),
+              ),
+            ),
       
     );
   }
