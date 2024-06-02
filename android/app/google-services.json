@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "117639569085-ddbrjf0h0lv2if3186fil446r99skilb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.moneytracker",
+            "certificate_hash": "818298034dfb348276817ce82ba3abffd31a1f04"
+          }
+        },
+        {
+          "client_id": "117639569085-qdq584elh4acqng0k6ut18mlu45r99fj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.moneytracker",
+            "certificate_hash": "a78a54fe6de82c95798fa54f377253795b0a4448"
+          }
+        },
+        {
           "client_id": "117639569085-0nb8lk5tn13uvek6v9q5ca8jjsl4sp1o.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -66,6 +82,42 @@
             "certificate_hash": "818298034dfb348276817ce82ba3abffd31a1f04"
           }
         },
+        {
+          "client_id": "117639569085-0nb8lk5tn13uvek6v9q5ca8jjsl4sp1o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaujKZQ1swDHSss0dKTzhz2Ym8v66bWqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117639569085-0nb8lk5tn13uvek6v9q5ca8jjsl4sp1o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "117639569085-2rdlfkrkr6udlsociv0a2i85va35od85.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ks.moneyTracker"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117639569085:android:14b2a266b046f04c35a1d4",
+        "android_client_info": {
+          "package_name": "com.k2digital.moneytracker.pro"
+        }
+      },
+      "oauth_client": [
         {
           "client_id": "117639569085-0nb8lk5tn13uvek6v9q5ca8jjsl4sp1o.apps.googleusercontent.com",
           "client_type": 3

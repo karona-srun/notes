@@ -1,4 +1,4 @@
-package com.android.moneytracker;
+package com.k2digital.moneytracker.pro;
 import android.app.Application;
 import android.content.Context;
 import androidx.annotation.CallSuper;

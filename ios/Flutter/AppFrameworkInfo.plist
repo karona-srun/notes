@@ -7,7 +7,7 @@
   <key>CFBundleExecutable</key>
   <string>App</string>
   <key>CFBundleIdentifier</key>
-  <string>com.android.moneytracker.flutter.app</string>
+  <string>com.k2digital.moneytracker.pro.flutter.app</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
