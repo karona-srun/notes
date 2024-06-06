@@ -50,7 +50,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
                 clipBehavior: Clip.hardEdge,
                 alignment: Alignment.center,
                 child: Image.asset(
-                  "assets/images/qr_code.png",
+                  "assets/images/logo.png",
                   width: MediaQuery.of(context).size.width - 120,
                   height: MediaQuery.of(context).size.width - 120,
                   fit: BoxFit.cover,
