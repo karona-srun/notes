@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -59,7 +60,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.myColorTittle,
         centerTitle: true,
-        title: Text('កំពុងរង់ផ្ទៀង​ផ្ទាត់',textAlign: TextAlign.center,
+        title: Text('lbVerify'.tr(),textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',
               fontWeight: FontWeight.normal,
@@ -79,9 +80,9 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(height: 45),
-            const Center(
+            Center(
               child: Text(
-                'សូមពិនិត្យអ៊ីមែលរបស់អ្នក',
+                'lbCheckEmail'.tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                         color: Colors.black,
@@ -94,7 +95,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Center(
                 child: Text(
-                  'យើងបានផ្ញើអ៊ីមែលទៅអ្នក \n${FirebaseAuth.instance.currentUser?.email}',
+                  '${'lbCheck1Email'.tr()} \n${FirebaseAuth.instance.currentUser?.email}',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                         color: Colors.black,
@@ -106,11 +107,11 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             const SizedBox(height: 20),
             const Center(child: CircularProgressIndicator()),
             const SizedBox(height: 20),
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 3.0),
               child: Center(
                 child: Text(
-                  'ផ្ទៀងផ្ទាត់អ៊ីមែល....',
+                  'lbCheck2Email'.tr(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                         color: Colors.black,
@@ -147,7 +148,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     height: 30,
                   ),
                   label: Text(
-                    'ផ្ញើឡើងវិញ',
+                    'btnResend'.tr(),
                     style: TextStyle(
                         color: Colors.amber[6000],
                         fontSize: 17,

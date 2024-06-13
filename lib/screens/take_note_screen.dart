@@ -1,6 +1,7 @@
 import 'package:beautiful_alert_dialog/beautiful_alert_dialog.dart';
 import 'package:board_datetime_picker/board_datetime_picker.dart';
 import 'package:decorated_dropdownbutton/decorated_dropdownbutton.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -21,8 +22,7 @@ class TakeNoteScreen extends StatefulWidget {
 class _TakeNoteScreenState extends State<TakeNoteScreen> {
   bool val = false;
   late int _tabTextIndexSelected = 0;
-  final List<String> _listTextTabToggle = ["ចំណូល", "ចំណាយ"];
-  final String info = "បញ្ជូលពត័មានឱ្យបានត្រឹមត្រូវ \nទើបរក្សាទុកបាន។";
+  final List<String> _listTextTabToggle = ["lbIncome".tr(),"lbExpense".tr()];
   Color red = Colors.red[800]!;
   Color green = Colors.green;
   String pickupDate = "";
@@ -80,9 +80,9 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                 borderRadius: BorderRadius.circular(5.0), // Set border radius
               ),
               child: TextButton(
-                child: const Text(
-                  "បិទ",
-                  style: TextStyle(
+                child: Text(
+                  "btnClose".tr(),
+                  style: const TextStyle(
                       fontFamily: 'Hanuman', fontSize: 16, color: Colors.white),
                 ),
                 onPressed: () {
@@ -100,7 +100,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
       String parPickupDate, String parRemark) async {
     try {
       setState(() {
-        parType = parType;
+        parType = parType == "ចំណូល" || parType == "Income" ? 'ចំណូល':'ចំណាយ';
         parAmount = parAmount;
         parCategory = parCategory;
         parPickupDate = parPickupDate;
@@ -236,7 +236,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
         scrolledUnderElevation: 0.0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'កត់ត្រា',
+          'lbTitle2'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',
@@ -260,7 +260,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 10.0),
                   child: Text(
-                    info,
+                    'lbIntroTakeNote'.tr(),
                     textAlign: TextAlign.start,
                     style: TextStyle(
                         fontFamily: 'Hanuman',
@@ -441,7 +441,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         activeTextColor: Colors.white,
                         activeColor: Colors.green,
                         backgroundColor: Colors.white,
-                        boardTitle: "ជ្រើសរើសកាលបរិច្ឆេទ",
+                        boardTitle: "lbChooseDate".tr(),
                         boardTitleTextStyle: TextStyle(
                             fontFamily: 'Hanuman', fontSize: 16),
                         languages: BoardPickerLanguages(
@@ -510,7 +510,7 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                         border: InputBorder.none,
                         filled: true,
                         fillColor: Colors.grey[200],
-                        hintText: 'ការកំណត់ចំណាំរបស់អ្នក',
+                        hintText: 'textFieldDescription'.tr(),
                         hintStyle: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w300,
@@ -566,18 +566,18 @@ class _TakeNoteScreenState extends State<TakeNoteScreen> {
                             pickupDate,
                             _remarkController.text);
                         print('Form is valid');
-                        _showDialog(context, 'ជោគជ័យ',
-                            'ព័ត៍មានរបស់អ្នកត្រូវបានរក្សាដោយជោគជ័យ', 1);
+                        _showDialog(context, 'lbAlertSuccess'.tr(),
+                            'lbAlertSuccessMsg'.tr(), 1);
                       } else {
                         // Form is not valid, do something
                         print('Form is not valid');
-                        _showDialog(context, 'សារជូនដំណឹង',
-                            'សួមបញ្ចូលព័ត៍មានឲ្យបានត្រឹមត្រូវ!', 2);
+                        _showDialog(context, 'lbAlertFail'.tr(),
+                            'lbAlertFailMsg'.tr(), 2);
                       }
                       debugPrint('End saveData');
                     },
-                    child: const Text(
-                      'រក្សាទុក',
+                    child: Text(
+                      'btnSave'.tr(),
                       style: TextStyle(
                         fontFamily: 'Hanuman',
                         color: Colors.white,

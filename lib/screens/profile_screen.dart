@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:money_tracker/screens/other/language_screen.dart';
 
 import 'chart_screen.dart';
 import 'other/about_us_screen.dart';
@@ -59,9 +61,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.orange,
             padding: const EdgeInsets.only(top: 35, bottom: 20),
             margin: const EdgeInsets.only(top: 0),
-            child: const Center(
+            child: Center(
               child: Text(
-                "គណនី",
+                "lbTitleAccount".tr(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20.0,
@@ -194,8 +196,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       "assets/images/icon/icons8-chart-100.png",
                       width: 24,
                     ),
-                    label: const Text(
-                      'ស្ថិតិ',
+                    label: Text(
+                      'menuGraph'.tr(),
                       style: TextStyle(
                         fontFamily: 'Hanuman',
                         fontSize: 15,
@@ -231,8 +233,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const WalletScreen()));
                     },
-                    label: const Text(
-                      "កាបូបខ្ញុំ",
+                    label: Text(
+                      "menuMyWallet".tr(),
+                      style: TextStyle(
+                          fontFamily: 'Hanuman',
+                          fontSize: 15,
+                          color: Colors.black),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(0, 50),
+                      surfaceTintColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      backgroundColor: Colors.grey[100],
+                      alignment: Alignment.centerLeft,
+                      foregroundColor: Colors.grey[100],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    width: sizeWidth, // Thickness
+                    height: 0.7,
+                    color: Colors.grey[400],
+                  ),
+                  ElevatedButton.icon(
+                    icon: Image.asset("assets/images/icon/language.png",
+                        height: 28, width: 28),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const LanguageScreen()));
+                    },
+                    label: Text(
+                      "menuLanguage".tr(),
                       style: TextStyle(
                           fontFamily: 'Hanuman',
                           fontSize: 15,
@@ -263,8 +297,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const SettingScreen()));
                     },
-                    label: const Text(
-                      "ការកំណត់",
+                    label: Text(
+                      "menuSetting".tr(),
                       style: TextStyle(
                           fontFamily: 'Hanuman',
                           fontSize: 15,
@@ -295,8 +329,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const SupportScreen()));
                     },
-                    label: const Text(
-                      "គាំទ្រការអភិវឌ្ឍន៍",
+                    label: Text(
+                      "menuSupport".tr(),
                       style: TextStyle(
                           fontFamily: 'Hanuman',
                           fontSize: 15,
@@ -327,8 +361,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const AboutUsScreen()));
                     },
-                    label: const Text(
-                      "អំពីយើងខ្ញុំ",
+                    label: Text(
+                      "menuAboutUs".tr(),
                       style: TextStyle(
                           fontFamily: 'Hanuman',
                           fontSize: 15,
@@ -365,8 +399,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           (route) => false);
                     },
-                    label: const Text(
-                      "ចាកចេញ",
+                    label: Text(
+                      "menuSignOut".tr(),
                       style: TextStyle(
                           fontFamily: 'Hanuman',
                           fontSize: 15,

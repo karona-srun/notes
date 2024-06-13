@@ -1,6 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../../app_colors.dart';
+import '../../../data/ad_helper.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -10,6 +13,91 @@ class FeedbackScreen extends StatefulWidget {
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
+  late BannerAd _bottomBannerAd;
+  int maxFailedLoadAttempts = 3;
+  bool _isBottomBannerAdLoaded = false;
+
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  String loading = 'Loading Ads';
+  static AdRequest request = const AdRequest(
+    keywords: <String>['foo', 'bar'],
+    contentUrl: 'http://foo.com/bar.html',
+    nonPersonalizedAds: true,
+  );
+
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdHelper.interstitialAdUnitId,
+        request: request,
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            _interstitialAd = ad;
+            _numInterstitialLoadAttempts = 0;
+            _interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            _numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void _showInterstitialAd() {
+    if (_interstitialAd == null) {
+      print('Warning: attempt to show interstitial before loaded.');
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
+
+  void _createBottomBannerAd() {
+    _bottomBannerAd = BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          setState(() {
+            _isBottomBannerAdLoaded = true;
+            loading = 'Show Ads';
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+    );
+    _bottomBannerAd.load();
+  }
+
+  @override
+  void initState() {
+    _createInterstitialAd();
+    _createBottomBannerAd();
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +107,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         scrolledUnderElevation: 0.0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'ផ្តល់មតិយោបល់',
+          'titleFeedback'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',
@@ -41,8 +129,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "សរសេរមតិយោបល់របស់អ្នក ឬ ស្នើសុំលក្ខណៈបន្ថែម\nក្នុងកម្មវិធី",
+                Text(
+                  "lbIntroFeedback".tr(),
                   overflow: TextOverflow.fade,
                   style: TextStyle(
                     fontFamily: 'Hanuman',
@@ -63,8 +151,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     keyboardType: TextInputType.multiline,
                     maxLines: 6,
                     autofocus: true,
-                    decoration: const InputDecoration(
-                        hintText: "សរសេរមតិយោបល់",
+                    decoration: InputDecoration(
+                        hintText: "textFieldFeedback".tr(),
                         hintStyle: TextStyle(
                           fontFamily: 'Hanuman'
                         ),
@@ -94,8 +182,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       ),
                     ),
                     onPressed: () {},
-                    child: const Text(
-                      'ផ្ញើ',
+                    child: Text(
+                      'btnSend'.tr(),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -107,6 +195,19 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ]),
         ),
       ),
+      bottomNavigationBar: _isBottomBannerAdLoaded
+        ? SizedBox(
+            height: _bottomBannerAd.size.height.toDouble(),
+            width: _bottomBannerAd.size.width.toDouble(),
+            child: AdWidget(ad: _bottomBannerAd),
+          )
+        : TextButton(onPressed: _showInterstitialAd, child: Text(loading, style: TextStyle(
+            fontFamily: 'Hanuman',
+            fontWeight: FontWeight.normal,
+            fontSize: 12,
+            color: AppColors.myColorBlack),
+            ),
+          ),
     );
   }
 }

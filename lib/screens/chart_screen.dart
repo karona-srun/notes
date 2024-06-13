@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
@@ -318,7 +319,7 @@ void _createInterstitialAd() {
                       margin: const EdgeInsets.symmetric(
                           horizontal: 0, vertical: 15),
                       child: Text(
-                        'ក្រាបស្ថិតិ',
+                        'menuGraph'.tr(),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             decoration: TextDecoration.none,
@@ -343,7 +344,7 @@ void _createInterstitialAd() {
                   ],
                 ),
                 Text(
-                  'ក្រាបបង្ហាញទិន្នន័យពីប្រតិបត្តិការ',
+                  'lbIntroChart'.tr(),
                   style: TextStyle(
                       decoration: TextDecoration.none,
                       fontFamily: 'Hanuman',

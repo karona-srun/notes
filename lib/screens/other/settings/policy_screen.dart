@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app_colors.dart';
@@ -19,7 +20,7 @@ class _PolicyScreenState extends State<PolicyScreen> {
         scrolledUnderElevation: 0.0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'ឯកជនភាព',
+          'menuPrivacy'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',

@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:datepicker_dropdown/datepicker_dropdown.dart';
 import 'package:datepicker_dropdown/order_format.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
@@ -466,10 +468,10 @@ class _TransationScreenState extends State<TransationScreen> {
                       fit: BoxFit.contain,
                       height: 20,
                     ),
-                    label: const Row(
+                    label: Row(
                       children: [
                         Text(
-                          "អត្រា",
+                          "lbExchange".tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontFamily: 'Hanuman',
@@ -481,8 +483,8 @@ class _TransationScreenState extends State<TransationScreen> {
                       ],
                     ),
                   ),
-                  const Text(
-                    'ប្រតិបត្តិការ',
+                  Text(
+                    'lbTitle1'.tr(),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontFamily: 'Hanuman',
@@ -576,8 +578,8 @@ class _TransationScreenState extends State<TransationScreen> {
                                     width: 24,
                                   ),
                                 ),
-                                const Text(
-                                  'ចំណូល',
+                                Text(
+                                  'lbIncome'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Hanuman',
                                       fontWeight: FontWeight.normal,
@@ -587,7 +589,7 @@ class _TransationScreenState extends State<TransationScreen> {
                               ],
                             ),
                             Text(
-                              totalIncome.toString(),
+                              double.parse(totalIncome.toString()).toStringAsFixed(2),
                               style: const TextStyle(
                                   fontFamily: 'Hanuman',
                                   fontWeight: FontWeight.normal,
@@ -626,8 +628,8 @@ class _TransationScreenState extends State<TransationScreen> {
                                     width: 24,
                                   ),
                                 ),
-                                const Text(
-                                  'ចំណាយ',
+                                Text(
+                                  'lbExpense'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Hanuman',
                                       fontWeight: FontWeight.normal,
@@ -637,7 +639,7 @@ class _TransationScreenState extends State<TransationScreen> {
                               ],
                             ),
                             Text(
-                              totalExpense.toString(),
+                              double.parse(totalExpense.toString()).toStringAsFixed(2),
                               style: const TextStyle(
                                   fontFamily: 'Hanuman',
                                   fontWeight: FontWeight.normal,
@@ -676,8 +678,8 @@ class _TransationScreenState extends State<TransationScreen> {
                                     width: 24,
                                   ),
                                 ),
-                                const Text(
-                                  'សរុប',
+                                Text(
+                                  'lbTotal'.tr(),
                                   style: TextStyle(
                                       fontFamily: 'Hanuman',
                                       fontWeight: FontWeight.normal,
@@ -687,7 +689,7 @@ class _TransationScreenState extends State<TransationScreen> {
                               ],
                             ),
                             Text(
-                              totalAmount.toString(),
+                              double.parse(totalAmount.toString()).toStringAsFixed(2),
                               style: const TextStyle(
                                   fontFamily: 'Hanuman',
                                   fontWeight: FontWeight.normal,
@@ -707,8 +709,8 @@ class _TransationScreenState extends State<TransationScreen> {
                         margin: EdgeInsets.symmetric(
                             vertical: MediaQuery.of(context).size.height / 4),
                         color: Colors.white,
-                        child: const Text(
-                          'មិនមានទិន្នន័យ​ \nចុច + ដើម្បីចាប់ផ្តើមកត់ត្រាប្រតិបត្តិការ',
+                        child: Text(
+                          'lbIntroAddTakeNote'.tr(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Hanuman',
@@ -753,7 +755,7 @@ class _TransationScreenState extends State<TransationScreen> {
                                     //       dashThickness: 2),
                                     // ),
                                     Text(
-                                      ' បញ្ជីប្រតិបត្តិការ: $date',
+                                      '${'lbTransection'.tr()} $date',
                                       style: const TextStyle(
                                         fontFamily: 'Hanuman',
                                         fontWeight: FontWeight.w500,
@@ -862,9 +864,7 @@ class _TransationScreenState extends State<TransationScreen> {
                                                               ),
                                                             ),
                                                             Text(
-                                                              items[itemIndex]
-                                                                      ['type']
-                                                                  .toString(),
+                                                              items[itemIndex]['type'].toString() == "ចំណាយ" ? 'lbExpense'.tr() : 'lbIncome'.tr(),
                                                               style: TextStyle(
                                                                   color: items[itemIndex]['type'].toString() ==
                                                                           "ចំណាយ"

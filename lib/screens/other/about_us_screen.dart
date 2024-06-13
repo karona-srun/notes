@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../app_colors.dart';
@@ -19,7 +20,7 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
         scrolledUnderElevation: 0.0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'អំពីយើងខ្ញុំ',
+          'menuAboutUs'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',
@@ -60,8 +61,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.only(left: 50, right: 50),
-              child: const Text(
-                "កត់ត្រាចំណាយ",
+              child: Text(
+                "app_name".tr(),
                 style: TextStyle(
                     fontFamily: 'Hanuman',
                     letterSpacing: 0,
@@ -73,8 +74,8 @@ class _AboutUsScreenState extends State<AboutUsScreen> {
             Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.only(left: 50, right: 50, top: 5),
-              child: const Text(
-                "កម្មវិធី កំណែៈ V 0.0.10",
+              child: Text(
+                "${"lbVersion".tr()}V 0.0.10",
                 style: TextStyle(
                   fontFamily: 'Hanuman',
                     letterSpacing: 0,

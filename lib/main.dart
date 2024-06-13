@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -31,7 +32,19 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  initializeDateFormatting('en', null).then((_) => runApp(const MyWidget()));
+  await EasyLocalization.ensureInitialized();
+  initializeDateFormatting('km_KH', null).then((_) => runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('km', 'KH'),Locale('en', 'US')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('km', 'KH'),
+      startLocale: Locale('km', 'KH'),
+      saveLocale: true,
+      useOnlyLangCode: false,
+      ignorePluralRules: false,
+      child: const MyWidget()
+    ),
+  ));
 }
 
 class MyWidget extends StatefulWidget {
@@ -72,6 +85,9 @@ class _MyWidgetState extends State<MyWidget> {
     ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       title: 'កត់ត្រា',
       theme: ThemeData(
         primarySwatch: Colors.orange,
@@ -83,7 +99,7 @@ class _MyWidgetState extends State<MyWidget> {
         useMaterial3: true,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: isLoggedIn ? const MainScreen() : const StartUpScreen(),
+      home: isLoggedIn ? const MainScreen(index: 0) : const StartUpScreen(),
     );
   }
 }

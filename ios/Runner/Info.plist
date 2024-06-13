@@ -7,6 +7,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>km</string>
+	</array>
 	<string>Money Tracker</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

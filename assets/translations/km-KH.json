@@ -1,0 +1,77 @@
+{
+    "app_name":"Money Tracker",
+    "lbIntro": "ចាប់ផ្តើមតាមដានប្រាក់របស់អ្នកប្រកបដោយប្រសិទ្ធភាព",
+    "lbIntro1": "រក្សាទិន្នន័យរបស់អ្នកឱ្យមានសុវត្ថិភាពដោយរក្សាទុកវាក្នុងពពក!",
+    "lbSelectLangauge": "ជ្រើសរើសភាសា៖ ",
+    "btnSignWithEmail": "បន្តជាមួយអ៊ីមែល",
+    "btnSignWithGoogle": "បន្តជាមួយ Google",
+
+    "lbIntroSignIn": "ចាប់ផ្តើមកត់ត្រាជាមួយគ្នា...",
+    "lbIntro1SignIn": "បញ្ជូលអ៊ីម៉ែល និងពាក្យសម្ងាត់របស់អ្នកដើម្បីចូលប្រើប្រាស់",
+    "textFieldEmail": "វាយបញ្ជូលអ៊ីម៉ែល",
+    "textFieldPassword": "វាយបញ្ជូលពាក្យសម្ងាត់",
+    "lbCreateNewAccount": "មិនមានគណនីមែនទេ? ",
+    "lbCreateNewAccount1": "បង្កើតគណនីថ្មី!",
+    "btnSignIn": "ចូលប្រើប្រាស់",
+
+    "lbIntroSignUp": "ចុះឈ្មោះប្រើប្រាស់",
+    "lbIntro1SignUp": "បញ្ចូលឈ្មោះ បញ្ចូលអ៊ីមែល និងពាក្យសម្ងាត់របស់អ្នកអោយបានត្រឹមត្រូវដើម្បីធ្វើការចុះឈ្មោះ",
+    "textFieldName": "វាយបញ្ជូលឈ្មោះ",
+    "textFieldConfirmPassword": "វាយបញ្ជូលពាក្យសម្ងាត់ម្តងទៀត",
+    "btnSignUp": "ចុះឈ្មោះ",
+
+    "lbVerify": "កំពុងរង់ផ្ទៀង​ផ្ទាត់",
+    "lbCheckEmail": "សូមពិនិត្យអ៊ីមែលរបស់អ្នក",
+    "lbCheck1Email": "យើងបានផ្ញើអ៊ីមែលទៅអ្នក",
+    "lbCheck2Email": "ផ្ទៀងផ្ទាត់អ៊ីមែល...",
+    "btnResend": "ផ្ញើឡើងវិញ",
+
+    "lbTitle1": "ប្រតិបត្តិការ",
+    "lbTitle2": "កត់ត្រា",
+    "lbTitle3": "ផ្សេងទៀត",
+
+    "lbExchange": "អត្រា",
+    "lbIncome": "ចំណូល",
+    "lbExpense": "ចំណាយ",
+    "lbTotal": "សរុប",
+    "lbTransection": "បញ្ជីប្រតិបត្តិការ៖ ",
+
+    "lbIntroTakeNote": "បញ្ចូលព័ត៌មានឪ្យបានត្រឹមត្រូវ \nទើបរក្សាទុកបាន។",
+    "textFieldDescription": "ការកំណត់ចំណាំរបស់អ្នក",
+    "btnSave": "រក្សាទុក",
+    "btnClose": "បិទ",
+
+    "lbTitleAccount": "គណនី",
+    "menuGraph": "ស្ថិតិ",
+    "menuMyWallet": "កាបូបខ្ញុំ",
+    "menuLanguage": "ភាសា",
+    "menuSetting": "ការកំណត់",
+    "menuSupport": "គាំទ្រការអភិវឌ្ឍន៍",
+    "menuAboutUs": "អំពីយើងខ្ញុំ",
+    "menuSignOut": "ចាកចេញ",
+
+    "lbTitleLangauge": "ជ្រើសរើសភាសា",
+    "lbTitleIntroLangauge": "អ្នកអាចជ្រើសរើសភាសានេះបាន ដោយចុចប៊ូតុងខាងក្រោមនេះ។ យ៉ាងណាក៏ដោយ យើងសូមណែនាំឪ្យអ្នកប្រើជាភាសាខ្មែរ។",
+    "btnKhmer": "ភាសាខ្មែរ",
+    "btnEnglish": "English",
+    "btnConfirm": "ជ្រើសរើសភាសានេះ",
+
+    "lbVersion": "កម្មវិធី កំណែ៖ ",
+    "lbIntroSupport": "បងប្អូនអាចចូលរួមវិភាគទានដើម្បីគាំទ្រការអភិវឌ្ឍន៍ កម្មវិធីចំណាយ តាមរយៈគណនី ABA ខាងលើ។\nសូមអរគុណសម្រាប់ការគាំទ្រ និង វិភាគទាន!",
+    
+    "menuFeedback": "ផ្តល់មតិយោបល់",
+    "menuShare": "ចែករំលែកកម្មវិធី",
+    "menuPrivacy": "គោលការណ៍ឯកជនភាព",
+
+    "lbIntroChart": "ក្រាបបង្ហាញទិន្នន័យពីប្រតិបត្តិការ",
+    "lbAlertSuccess": "ជោគជ័យ",
+    "lbAlertSuccessMsg": "ព័ត៍មានរបស់អ្នកត្រូវបានរក្សាដោយជោគជ័យ",
+    "lbAlertFail": "សារជូនដំណឹង",
+    "lbAlertFailMsg": "សួមបញ្ចូលព័ត៍មានឲ្យបានត្រឹមត្រូវ",
+    "lbChooseDate": "ជ្រើសរើសកាលបរិច្ឆេទ",
+    "titleFeedback": "ផ្តល់មតិយោបល់",
+    "lbIntroFeedback": "សរសេរមតិយោបល់របស់អ្នក ឬ ស្នើសុំលក្ខណៈបន្ថែម\nក្នុងកម្មវិធី",
+    "textFieldFeedback": "សរសេរមតិយោបល់",
+    "btnSend": "ផ្ញើ",
+    "lbIntroAddTakeNote": "មិនមានទិន្នន័យ​ \nចុច + ដើម្បីចាប់ផ្តើមកត់ត្រាប្រតិបត្តិការ"
+}

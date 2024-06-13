@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -8,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../app_colors.dart';
+import '../utils/shared_pref.dart';
 import 'main_screen.dart';
 import 'sign_in_screen.dart';
 
@@ -76,7 +78,7 @@ class _StartUpScreenState extends State<StartUpScreen> {
         Navigator.pushAndRemoveUntil<dynamic>(
             context,
             MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainScreen(),
+              builder: (BuildContext context) => const MainScreen(index: 0),
             ),
             (route) => false);
         return user;
@@ -137,29 +139,32 @@ class _StartUpScreenState extends State<StartUpScreen> {
                 margin: const EdgeInsets.only(top: 20.0, bottom: 10),
                 width: MediaQuery.of(context).size.width - 50,
                 child: Text(
-                  "Start tracking your money effectively",
+                  "lbIntro",
                   textAlign: TextAlign.start,
                   style: TextStyle(
                       letterSpacing: 0,
                       wordSpacing: 0.0,
                       color: Colors.amber[600],
                       fontSize: 24,
+                      fontFamily: 'Hanuman',
                       fontWeight: FontWeight.normal),
-                ),
+                ).tr(),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 0.0, bottom: 20),
                 width: MediaQuery.of(context).size.width - 50,
+                height: 45,
                 child: const Text(
-                  "Keep your data safe by storage it in the cloud.",
+                  "lbIntro1",
                   textAlign: TextAlign.start,
                   style: TextStyle(
                       letterSpacing: 0,
                       wordSpacing: 0.0,
-                      color: Colors.grey,
+                      color: Colors.black,
                       fontSize: 16,
+                      fontFamily: 'Hanuman',
                       fontWeight: FontWeight.normal),
-                ),
+                ).tr(),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 10, bottom: 10),
@@ -194,8 +199,8 @@ class _StartUpScreenState extends State<StartUpScreen> {
                     width: 30,
                     height: 30,
                   ),
-                  label: const Text(
-                    'បន្តជាមួយអ៊ីមែល',
+                  label: Text(
+                    'btnSignWithEmail'.tr(),
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 17,
@@ -233,9 +238,9 @@ class _StartUpScreenState extends State<StartUpScreen> {
                     width: 30,
                     height: 30,
                   ),
-                  label: const Text(
-                    'បន្តជាមួយ Google',
-                    style: TextStyle(
+                  label: Text(
+                    'btnSignWithGoogle'.tr(),
+                    style: const TextStyle(
                         color: Colors.white,
                         fontSize: 17,
                         fontFamily: "Hanuman"),
@@ -256,10 +261,43 @@ class _StartUpScreenState extends State<StartUpScreen> {
                     child: LinearProgressIndicator(
                       minHeight: 2,
                       backgroundColor: Colors.amber[600],
-                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                      valueColor: const AlwaysStoppedAnimation(Colors.white),
                     ),
                   ),
                 ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                height: 50.0,
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('lbSelectLangauge',style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontFamily: "Hanuman"),).tr(),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(10), // Set the border radius here
+                      ),
+                      child:Row(
+                        children: [
+                          TextButton(onPressed: (){
+                            context.locale = const Locale("km", "KH"); 
+                            SharedPref.addLang('km');
+                          }, child: Image.asset('assets/images/icon/kh_flag.png')),
+                          const Text("|"),
+                          TextButton(onPressed: (){
+                              context.locale = const Locale("en", "US"); 
+                              SharedPref.addLang('en');
+                           }, child: Image.asset('assets/images/icon/us_flag.png'))
+                        ],
+                      )
+                    )
+                  ],
+                )
               ),
               const SizedBox(height: 10.0),
             ],

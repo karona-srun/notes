@@ -149,7 +149,7 @@ class _UpdateTransctionScreenState extends State<UpdateTransctionScreen> {
         Navigator.pushAndRemoveUntil<dynamic>(
             context,
             MaterialPageRoute<dynamic>(
-              builder: (BuildContext context) => const MainScreen(),
+              builder: (BuildContext context) => const MainScreen(index: 0),
             ),
             (route) => false);
       } else {
@@ -170,7 +170,7 @@ class _UpdateTransctionScreenState extends State<UpdateTransctionScreen> {
       Navigator.pushAndRemoveUntil<dynamic>(
           context,
           MaterialPageRoute<dynamic>(
-            builder: (BuildContext context) => const MainScreen(),
+            builder: (BuildContext context) => const MainScreen(index: 0),
           ),
           (route) => false);
     }).catchError((error) {

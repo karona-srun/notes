@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +86,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     margin: const EdgeInsets.only(top: 20.0, bottom: 10),
                     width: MediaQuery.of(context).size.width - 50,
                     child: Text(
-                      "ចាប់ផ្តើមកត់ត្រាជាមួយគ្នា...",
+                      "lbIntroSignIn".tr(),
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           letterSpacing: 0,
@@ -99,8 +100,8 @@ class _SignInScreenState extends State<SignInScreen> {
                   Container(
                     margin: const EdgeInsets.only(top: 0.0, bottom: 20),
                     width: MediaQuery.of(context).size.width - 50,
-                    child: const Text(
-                      "បញ្ចូលអ៊ីមែល និងពាក្យសម្ងាត់របស់អ្នកដើម្បីចូលប្រើប្រាស់",
+                    child: Text(
+                      "lbIntro1SignIn".tr(),
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           letterSpacing: 0,
@@ -125,8 +126,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           color: Colors.black,
                           fontSize: 18.0,
                           fontWeight: FontWeight.normal),
-                      decoration: const InputDecoration(
-                        hintText: "វាយបញ្ចូលអ៊ីម៉ែល",
+                      decoration: InputDecoration(
+                        hintText: "textFieldEmail".tr(),
                         hintStyle: TextStyle(
                             letterSpacing: 0,
                             fontSize: 18.0,
@@ -164,8 +165,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           color: Colors.black,
                           fontSize: 18.0,
                           fontWeight: FontWeight.normal),
-                      decoration: const InputDecoration(
-                        hintText: "វាយបញ្ចូលពាក្យសម្ងាត់",
+                      decoration: InputDecoration(
+                        hintText: "textFieldPassword".tr(),
                         hintStyle: TextStyle(
                             letterSpacing: 0,
                             fontSize: 18.0,
@@ -195,14 +196,14 @@ class _SignInScreenState extends State<SignInScreen> {
                       children: [
                         RichText(
                           text: TextSpan(
-                            text: 'មិនមានគណនីមែនទេ? ',
+                            text: 'lbCreateNewAccount'.tr(),
                             style: const TextStyle(
                                 fontFamily: 'Hanuman',
                                 fontSize: 16,
                                 color: Colors.black),
                             children: <TextSpan>[
                               TextSpan(
-                                  text: 'បង្កើត​គណនី​ថ្មី!',
+                                  text: 'lbCreateNewAccount1'.tr(),
                                   style: const TextStyle(
                                       fontFamily: 'Hanuman',
                                       fontSize: 18,
@@ -244,12 +245,12 @@ class _SignInScreenState extends State<SignInScreen> {
                               context,
                               MaterialPageRoute<dynamic>(
                                   builder: (BuildContext context) =>
-                                      const MainScreen()),
+                                      const MainScreen(index: 0)),
                               (route) => false);
                         }
                       },
-                      child: const Text(
-                        'ចុះឈ្មោះ',
+                      child: Text(
+                        'btnSignIn'.tr(),
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 17,

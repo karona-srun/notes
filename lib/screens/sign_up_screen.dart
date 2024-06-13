@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,10 +88,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Image.asset("assets/images/sign_up.png"),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top: 20.0, bottom: 10),
+                    margin: const EdgeInsets.only(top: 5.0, bottom: 5),
                     width: MediaQuery.of(context).size.width - 50,
                     child: Text(
-                      "ចុះឈ្មោះប្រើប្រាស់",
+                      "lbIntroSignUp".tr(),
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           letterSpacing: 0,
@@ -104,8 +105,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Container(
                     margin: const EdgeInsets.only(top: 0.0, bottom: 20),
                     width: MediaQuery.of(context).size.width - 50,
-                    child: const Text(
-                      "បញ្ចូលឈ្មោះ បញ្ចូលអ៊ីមែល និងពាក្យសម្ងាត់របស់អ្នកអោយបានត្រឹមត្រូវដើម្បីធ្វើការចុះឈ្មោះ",
+                    child: Text(
+                      "lbIntro1SignUp".tr(),
                       textAlign: TextAlign.start,
                       style: TextStyle(
                           letterSpacing: 0,
@@ -130,8 +131,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           color: Colors.black,
                           fontSize: 18.0,
                           fontWeight: FontWeight.normal),
-                      decoration: const InputDecoration(
-                        hintText: "វាយបញ្ចូលឈ្មោះ",
+                      decoration: InputDecoration(
+                        hintText: "textFieldName".tr(),
                         hintStyle: TextStyle(
                             letterSpacing: 0,
                             fontSize: 18.0,
@@ -166,8 +167,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           color: Colors.black,
                           fontSize: 18.0,
                           fontWeight: FontWeight.normal),
-                      decoration: const InputDecoration(
-                        hintText: "វាយបញ្ចូលអ៊ីម៉ែល",
+                      decoration: InputDecoration(
+                        hintText: "textFieldEmail".tr(),
                         hintStyle: TextStyle(
                             letterSpacing: 0,
                             fontSize: 18.0,
@@ -205,8 +206,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           color: Colors.black,
                           fontSize: 18.0,
                           fontWeight: FontWeight.normal),
-                      decoration: const InputDecoration(
-                        hintText: "វាយបញ្ចូលពាក្យសម្ងាត់",
+                      decoration: InputDecoration(
+                        hintText: "textFieldPassword".tr(),
                         hintStyle: TextStyle(
                             letterSpacing: 0,
                             fontSize: 18.0,
@@ -244,8 +245,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           color: Colors.black,
                           fontSize: 18.0,
                           fontWeight: FontWeight.normal),
-                      decoration: const InputDecoration(
-                        hintText: "វាយបញ្ចូលពាក្យសម្ងាត់ម្តងទៀត",
+                      decoration: InputDecoration(
+                        hintText: "textFieldConfirmPassword".tr(),
                         hintStyle: TextStyle(
                             letterSpacing: 0,
                             fontSize: 18.0,
@@ -292,8 +293,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         //             const MainScreen()),
                         //     (route) => false);
                       },
-                      child: const Text(
-                        'ចុះឈ្មោះ',
+                      child: Text(
+                        'btnSignUp'.tr(),
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 17,

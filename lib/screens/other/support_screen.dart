@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -106,7 +107,7 @@ class _SupportScreenState extends State<SupportScreen> {
         scrolledUnderElevation: 0.0,
         surfaceTintColor: Colors.transparent,
         title: Text(
-          'គាំទ្រការអភិវឌ្ឍន៍',
+          'menuSupport'.tr(),
           textAlign: TextAlign.center,
           style: TextStyle(
               fontFamily: 'Hanuman',
@@ -147,8 +148,8 @@ class _SupportScreenState extends State<SupportScreen> {
             Container(
               alignment: Alignment.centerLeft,
               margin: const EdgeInsets.only(left: 50, right: 50),
-              child: const Text(
-                "បងប្អូនអាចចូលរួមវិភាគទានដើម្បីគាំទ្រការអភិវឌ្ឍន៍ កម្មវិធីចំណាយ តាមរយៈគណនី ABA ខាងលើ។\nសូមអរគុណសម្រាប់ការគាំទ្រ និង វិភាគទាន!",
+              child: Text(
+                "lbIntroSupport".tr(),
                 style: TextStyle(
                     letterSpacing: 0,
                     wordSpacing: 0,

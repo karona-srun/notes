@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../app_colors.dart';
 import 'profile_screen.dart';
@@ -5,7 +8,8 @@ import 'take_note_screen.dart';
 import 'transation_screen.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final int index;
+  const MainScreen({super.key, required this.index});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -25,6 +29,9 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _currentIndex = widget.index;
+    });
   }
 
   @override
@@ -111,7 +118,7 @@ class _MainScreenState extends State<MainScreen> {
                 width: 24,
                 height: 24,
                 fit: BoxFit.cover),
-            label: 'ប្រតិបត្តិការ',
+            label: 'lbTitle1'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -124,7 +131,7 @@ class _MainScreenState extends State<MainScreen> {
               color: AppColors.myColorActiveIcon,
               size: 24,
             ),
-            label: 'កត់ត្រា',
+            label: 'lbTitle2'.tr(),
           ),
           BottomNavigationBarItem(
             icon: Image.asset('assets/images/icon/menu.png',
@@ -137,7 +144,7 @@ class _MainScreenState extends State<MainScreen> {
                 width: 24,
                 height: 24,
                 fit: BoxFit.cover),
-            label: 'ផ្សេងទៀត',
+            label: 'lbTitle3'.tr(),
           ),
         ],
       ),

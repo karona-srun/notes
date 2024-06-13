@@ -1,0 +1,78 @@
+{
+    "app_name":"Money Tracker",
+    "lbIntro": "Start tracking your money effectively",
+    "lbIntro1": "Keep your data safe by storage it in the cloud.",
+    "lbSelectLangauge": "Select Langauge: ",
+    "btnSignWithEmail": "Continue with Email",
+    "btnSignWithGoogle": "Continue with Google",
+
+    "lbIntroSignIn": "Start note together...",
+    "lbIntro1SignIn": "Enter your email and password to access",
+    "textFieldEmail": "Enter your email",
+    "textFieldPassword": "Enter your password",
+    "lbCreateNewAccount": "Have not account? ",
+    "lbCreateNewAccount1": "Create new account!",
+    "btnSignIn": "Sign In",
+
+    "lbIntroSignUp": "Signing Up",
+    "lbIntro1SignUp": "Enter your username, email and password correctly to Sign Up.",
+    "textFieldName": "Enter your name",
+    "textFieldConfirmPassword": "Enter your confirm password",
+    "btnSignUp": "Sign Up",
+
+    "lbVerify": "Awaiting Verification",
+    "lbCheckEmail": "Please check your email",
+    "lbCheck1Email": "We sent you an email",
+    "lbCheck2Email": "Verify the email...",
+    "btnResend": "Try again",
+
+    "lbTitle1": "Money Tracker",
+    "lbTitle2": "Take Note",
+    "lbTitle3": "Other",
+
+    "lbExchange": "Exch.",
+    "lbIncome": "Income",
+    "lbExpense": "Expense",
+    "lbTotal": "Total",
+    "lbTransection": "Transection: ",
+
+    "lbIntroTakeNote": "Enter the correct information \nTo keep.",
+    "textFieldDescription": "Enter your description",
+    "btnSave": "Save",
+    "btnClose": "Close",
+
+    "lbTitleAccount": "Account",
+    "menuGraph": "Statistics Graph",
+    "menuMyWallet": "My Wallet",
+    "menuLanguage": "Languages",
+    "menuSetting": "Settings",
+    "menuSupport": "Support",
+    "menuAboutUs": "About Us",
+    "menuSignOut": "Sign Out",
+
+    "lbTitleLangauge": "Select Langauge",
+    "lbTitleIntroLangauge": "You can select this language by clicking the button below. However, we recommend that you use the Khmer language.",
+    "btnKhmer": "ភាសាខ្មែរ",
+    "btnEnglish": "English",
+    "btnConfirm": "Confirm",
+
+    "lbVersion": "App Version: ",
+    "lbIntroSupport": "You can contribute to support the development of the expenditure program through the ABA account above. \nThank you for your support and contribution!",
+
+    "menuFeedback": "Feedback",
+    "menuShare": "Share",
+    "menuPrivacy": "Privacy & Policy",
+
+    "lbIntroChart": "Graph showing transaction data",
+    "lbAlertSuccess": "Success",
+    "lbAlertSuccessMsg": "Your information was saved successfully.",
+    "lbAlertFail": "Failed",
+    "lbAlertFailMsg": "Please enter the correct information.",
+    "lbChooseDate": "Choose Date",
+
+    "titleFeedback": "Enter Feedback",
+    "lbIntroFeedback": "Write your comments or request additional features \nin the app",
+    "textFieldFeedback": "Write a feedback",
+    "btnSend": "Send",
+    "lbIntroAddTakeNote": "No data \n Press + button to start recording transactions"
+}
