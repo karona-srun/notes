@@ -294,8 +294,8 @@ class _StartUpScreenState extends State<StartUpScreen> {
                               SharedPref.addLang('en');
                            }, child: Image.asset('assets/images/icon/us_flag.png'))
                         ],
-                      )
-                    )
+                      ),
+                    ),
                   ],
                 )
               ),
