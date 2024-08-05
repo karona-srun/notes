@@ -23,7 +23,7 @@ class _SettingScreenState extends State<SettingScreen>
 
   InterstitialAd? _interstitialAd;
   int _numInterstitialLoadAttempts = 0;
-  String loading = 'Loading Ads';
+  String loading = '';
   static AdRequest request = const AdRequest(
     keywords: <String>['foo', 'bar'],
     contentUrl: 'http://foo.com/bar.html',
@@ -84,7 +84,7 @@ class _SettingScreenState extends State<SettingScreen>
         onAdLoaded: (_) {
           setState(() {
             _isBottomBannerAdLoaded = true;
-            loading = 'Show Ads';
+            loading = '';
           });
         },
         onAdFailedToLoad: (ad, error) {

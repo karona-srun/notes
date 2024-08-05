@@ -357,70 +357,70 @@ class _TransationScreenState extends State<TransationScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    khr == '0' ? Text(
                       'Coming soon...',
                       style: TextStyle(fontFamily: 'Hanuman'),
                     )
-                    // TextButton.icon(
-                    //   onPressed: () async {},
-                    //   style: ButtonStyle(
-                    //       shape:
-                    //           MaterialStateProperty.all<RoundedRectangleBorder>(
-                    //               RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(10.0),
-                    //       )),
-                    //       backgroundColor:
-                    //           MaterialStatePropertyAll(Colors.grey[100])),
-                    //   icon: Image.asset(
-                    //     "assets/images/icon/us_flag.png",
-                    //     fit: BoxFit.contain,
-                    //     height: 24,
-                    //   ),
-                    //   label: const Row(
-                    //     children: [
-                    //       Text(
-                    //         "1 អាមេរិក (ដុល្លា)",
-                    //         textAlign: TextAlign.start,
-                    //         style: TextStyle(
-                    //             fontFamily: 'Hanuman',
-                    //             fontWeight: FontWeight.normal,
-                    //             fontSize: 16,
-                    //             color: Colors.black),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // TextButton.icon(
-                    //   onPressed: () async {},
-                    //   style: ButtonStyle(
-                    //     shape:
-                    //         MaterialStateProperty.all<RoundedRectangleBorder>(
-                    //       RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(10.0),
-                    //       ),
-                    //     ),
-                    //     backgroundColor:
-                    //         MaterialStatePropertyAll(Colors.grey[100]),
-                    //   ),
-                    //   icon: Image.asset(
-                    //     "assets/images/icon/kh_flag.png",
-                    //     fit: BoxFit.contain,
-                    //     height: 24,
-                    //   ),
-                    //   label: Row(
-                    //     children: [
-                    //       Text(
-                    //         "$khr កម្ពុជា​ (រៀល)",
-                    //         textAlign: TextAlign.start,
-                    //         style: const TextStyle(
-                    //             fontFamily: 'Hanuman',
-                    //             fontWeight: FontWeight.normal,
-                    //             fontSize: 16,
-                    //             color: Colors.black),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
+                    : TextButton.icon(
+                      onPressed: () async {},
+                      style: ButtonStyle(
+                          shape:
+                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          )),
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.grey[100])),
+                      icon: Image.asset(
+                        "assets/images/icon/us_flag.png",
+                        fit: BoxFit.contain,
+                        height: 24,
+                      ),
+                      label: const Row(
+                        children: [
+                          Text(
+                            "1 អាមេរិក (ដុល្លា)",
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                                fontFamily: 'Hanuman',
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton.icon(
+                      onPressed: () async {},
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        backgroundColor:
+                            MaterialStatePropertyAll(Colors.grey[100]),
+                      ),
+                      icon: Image.asset(
+                        "assets/images/icon/kh_flag.png",
+                        fit: BoxFit.contain,
+                        height: 24,
+                      ),
+                      label: Row(
+                        children: [
+                          Text(
+                            "$khr កម្ពុជា​ (រៀល)",
+                            textAlign: TextAlign.start,
+                            style: const TextStyle(
+                                fontFamily: 'Hanuman',
+                                fontWeight: FontWeight.normal,
+                                fontSize: 16,
+                                color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
         );

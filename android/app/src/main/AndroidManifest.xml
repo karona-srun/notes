@@ -8,6 +8,8 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-6443442205769107~8760990876"/>
+        <property android:name="android.adservices.AD_SERVICES_CONFIG"
+            android:resource="@xml/ad_services_config" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

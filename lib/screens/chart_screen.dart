@@ -23,7 +23,7 @@ class _ChartScreenState extends State<ChartScreen>
 
   String testDevice = 'YOUR_DEVICE_ID';
   int maxFailedLoadAttempts = 3;
-  String loading = 'loading Ads';
+  String loading = 'Ads';
   late AnimationController _animationController;
   var getMonthFormatter = DateFormat('MM');
   var getYearFormatter = DateFormat('yyyy');
@@ -273,7 +273,7 @@ void _createInterstitialAd() {
         onAdLoaded: (_) {
           setState(() {
             _isBottomBannerAdLoaded = true;
-            loading = 'Show Ads';
+            loading = 'Ads';
           });
         },
         onAdFailedToLoad: (ad, error) {

@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "117639569085-48l61fq3tp5fiv7pkj1cd3d6g2c9m400.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.moneytracker",
+            "certificate_hash": "7bff423440ad74a516e29d77ba219ff58e1b2155"
+          }
+        },
+        {
           "client_id": "117639569085-ddbrjf0h0lv2if3186fil446r99skilb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -118,6 +126,22 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "117639569085-5b7hvs86i1f930uu2ov84r9946le1sf1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.k2digital.moneytracker.pro",
+            "certificate_hash": "818298034dfb348276817ce82ba3abffd31a1f04"
+          }
+        },
+        {
+          "client_id": "117639569085-coqb8sui22rqi82gkt4s0d6hh2opfb9j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.k2digital.moneytracker.pro",
+            "certificate_hash": "a78a54fe6de82c95798fa54f377253795b0a4448"
+          }
+        },
         {
           "client_id": "117639569085-0nb8lk5tn13uvek6v9q5ca8jjsl4sp1o.apps.googleusercontent.com",
           "client_type": 3
