@@ -226,38 +226,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  ElevatedButton.icon(
-                    icon: Image.asset("assets/images/icon/wallet.png",
-                        height: 28, width: 28),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const WalletScreen()));
-                    },
-                    label: Text(
-                      "menuMyWallet".tr(),
-                      style: TextStyle(
-                          fontFamily: 'Hanuman',
-                          fontSize: 15,
-                          color: Colors.black),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(0, 50),
-                      surfaceTintColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      backgroundColor: Colors.grey[100],
-                      alignment: Alignment.centerLeft,
-                      foregroundColor: Colors.grey[100],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    width: sizeWidth, // Thickness
-                    height: 0.7,
-                    color: Colors.grey[400],
-                  ),
+                  // ElevatedButton.icon(
+                  //   icon: Image.asset("assets/images/icon/wallet.png",
+                  //       height: 28, width: 28),
+                  //   onPressed: () {
+                  //     Navigator.of(context).push(MaterialPageRoute(
+                  //         builder: (context) => const WalletScreen()));
+                  //   },
+                  //   label: Text(
+                  //     "menuMyWallet".tr(),
+                  //     style: TextStyle(
+                  //         fontFamily: 'Hanuman',
+                  //         fontSize: 15,
+                  //         color: Colors.black),
+                  //   ),
+                  //   style: ElevatedButton.styleFrom(
+                  //     fixedSize: const Size(0, 50),
+                  //     surfaceTintColor: Colors.transparent,
+                  //     shadowColor: Colors.transparent,
+                  //     backgroundColor: Colors.grey[100],
+                  //     alignment: Alignment.centerLeft,
+                  //     foregroundColor: Colors.grey[100],
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(5.0),
+                  //     ),
+                  //   ),
+                  // ),
+                  // Container(
+                  //   margin: const EdgeInsets.symmetric(horizontal: 20),
+                  //   width: sizeWidth, // Thickness
+                  //   height: 0.7,
+                  //   color: Colors.grey[400],
+                  // ),
                   ElevatedButton.icon(
                     icon: Image.asset("assets/images/icon/language.png",
                         height: 28, width: 28),

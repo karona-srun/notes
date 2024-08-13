@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../app_colors.dart';
 import '../../data/ad_helper.dart';
 import 'settings/feedback_screen.dart';
@@ -109,6 +111,13 @@ class _SettingScreenState extends State<SettingScreen>
     super.dispose();
   }
 
+  void _launchURL() async {
+    final Uri url = Uri.parse("https://play.google.com/store/apps/details?id=com.k2digital.moneytracker.pro");
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,7 +189,12 @@ class _SettingScreenState extends State<SettingScreen>
                         ),
                         leading: Image.asset("assets/images/icon/share.png",
                             height: 28, width: 28),
-                        onTap: () {},
+                        onTap: () async {
+                          if (kDebugMode) {
+                            print("Sharing");
+                          }
+                          _launchURL();
+                        },
                       ),
                     ),
                     Container(
