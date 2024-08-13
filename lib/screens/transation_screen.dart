@@ -107,15 +107,19 @@ class _TransationScreenState extends State<TransationScreen> {
     );
 
     if (response.statusCode == 200) {
-      print(response.body);
+      if (kDebugMode) {
+        print(response.body);
+      }
       var result = jsonDecode(response.body);
       setState(() {
         khr = result['result'].toStringAsFixed(2).toString();
         _date = KhmerDate.date(DateTime.now().toIso8601String(),
-            format: "ថ្ងៃdddd ទីdd ខែmmm ឆ្នាំyyyy");
+            format: "ថ្ងៃdddd ទីdd ខែMMM ឆ្នាំyyyy");
       });
     } else {
-      print('Request failed with status: ${response.statusCode}');
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
     }
     setState(() {
       isLoading = false;

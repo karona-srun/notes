@@ -38,14 +38,14 @@ dependencies:
   toggle_switch: ^2.2.3
   intl: ^0.19.0
   easy_localization: ^3.0.0
-  board_datetime_picker: ^1.3.29
+  board_datetime_picker: ^2.1.0
   google_sign_in: ^6.2.1
   http: ^1.2.0
   firebase_core: ^3.3.0
   firebase_auth: ^5.1.3
   toasty_snackbar: ^0.0.1
   quickalert: ^1.1.0
-  dart_format: ^0.0.4
+  dart_format: ^1.1.17
   cloud_firestore: ^5.2.0
   firebase_database: ^11.0.4
   shared_preferences: ^2.2.3
@@ -55,12 +55,13 @@ dependencies:
   flutter_dash: ^1.0.0
   decorated_dropdownbutton: ^0.0.3
   beautiful_alert_dialog: ^0.0.7
-  khmer_date: ^0.0.3
+  khmer_date: ^1.0.3
   datepicker_dropdown: ^0.1.0
   sliding_sheet2: ^2.0.1
   flutter_chart_plus: any
   flexible_dropdown: ^1.0.4
   google_mobile_ads: ^5.1.0
+  toastification: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -71,7 +72,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

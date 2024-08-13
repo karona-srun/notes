@@ -6,6 +6,8 @@
     "btnSignWithEmail": "Continue with Email",
     "btnSignWithGoogle": "Continue with Google",
 
+    "lbTitleMsg": "Notification",
+    "lbErrorSignIn": "Access failed. Please check your email and password again!",
     "lbIntroSignIn": "Start note together...",
     "lbIntro1SignIn": "Enter your email and password to access",
     "textFieldEmail": "Enter your email",
@@ -14,6 +16,8 @@
     "lbCreateNewAccount1": "Create new account!",
     "btnSignIn": "Sign In",
 
+    "lbErrorSignUp": "Signing Up failed. Please recheck your information!",
+    "lbErrorWrongPassword_Confirmation": "Password and Confirmation password do not match.",
     "lbIntroSignUp": "Signing Up",
     "lbIntro1SignUp": "Enter your username, email and password correctly to Sign Up.",
     "textFieldName": "Enter your name",

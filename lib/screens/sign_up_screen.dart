@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_colors.dart';
+import '../utils/toast_notification.dart';
 import 'email_verification_screen.dart';
 import 'main_screen.dart';
 
@@ -21,6 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController passwordConfirmController =
       TextEditingController();
+  final ToastNotification _toastNotification = ToastNotification();
 
   Future<bool> createUserWithEmail(String email, String password) async {
     try {
@@ -281,10 +283,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        bool isCreated = await createUserWithEmail(emailController.text, passwordController.text);
-                        if(isCreated){
-                          Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const EmailVerificationScreen()));
+                        if(nameController.text.isEmpty || emailController.text.isEmpty || passwordController.text.isEmpty || passwordConfirmController.text.isEmpty){
+                            _toastNotification.showNotify(
+                              context, 'lbTitleMsg'.tr(), 'lbErrorSignUp'.tr());
+                        }else{
+                          if( passwordController.text.toString() != passwordConfirmController.text.toString() ){
+                            _toastNotification.showNotify(
+                                context, 'lbTitleMsg'.tr(), 'lbErrorWrongPassword_Confirmation'.tr());
+                          }else{
+                            bool isCreated = await createUserWithEmail(emailController.text, passwordController.text);
+                            if(isCreated){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => const EmailVerificationScreen()));
+                            }else{
+                              _toastNotification.showNotify(
+                                context, 'lbTitleMsg'.tr(), 'lbErrorSignUp'.tr());
+                            }
+                          }
                         }
                         // Navigator.pushAndRemoveUntil<dynamic>(
                         //     context,

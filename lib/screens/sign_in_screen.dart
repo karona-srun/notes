@@ -1,8 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../utils/toast_notification.dart';
+import 'package:toastification/toastification.dart';
 
 import '../app_colors.dart';
 import 'main_screen.dart';
@@ -19,28 +22,30 @@ class _SignInScreenState extends State<SignInScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final bool _validate = false;
+  final ToastNotification _toastNotification = ToastNotification();
 
   Future<bool> signInWithEmail(String email, String password) async {
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password
-      );
+      final credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
       return true;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        if (kDebugMode) {
+          print('No user found for that email.');
+        }
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        if (kDebugMode) {
+          print('Wrong password provided for that user.');
+        }
       }
     }
-    // Authentication failed
     return false;
   }
 
   @override
   void dispose() {
-    // Clean up the controller when the widget is disposed.
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -59,8 +64,8 @@ class _SignInScreenState extends State<SignInScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         systemOverlayStyle: SystemUiOverlayStyle(
-          systemNavigationBarColor: hexToColor('#f2f2ff'),//bottom bar icons
-    ),
+          systemNavigationBarColor: hexToColor('#f2f2ff'), //bottom bar icons
+        ),
       ),
       backgroundColor: const Color.fromRGBO(242, 242, 255, 1.000),
       body: SingleChildScrollView(
@@ -237,21 +242,32 @@ class _SignInScreenState extends State<SignInScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        bool isLogdgedIn = await signInWithEmail(
-                            emailController.text, passwordController.text);
-                        print('isLogdgedIn $isLogdgedIn');
-                        if (isLogdgedIn) {
-                          Navigator.pushAndRemoveUntil<dynamic>(
-                              context,
-                              MaterialPageRoute<dynamic>(
-                                  builder: (BuildContext context) =>
-                                      const MainScreen(index: 0)),
-                              (route) => false);
+                        if (emailController.text.isEmpty ||
+                            passwordController.text.isEmpty) {
+                          _toastNotification.showNotify(
+                              context, 'lbTitleMsg'.tr(), 'lbErrorSignIn'.tr());
+                        } else {
+                          bool isLogdgedIn = await signInWithEmail(
+                              emailController.text, passwordController.text);
+                          if (kDebugMode) {
+                            print('isLogdgedIn $isLogdgedIn');
+                          }
+                          if (isLogdgedIn) {
+                            Navigator.pushAndRemoveUntil<dynamic>(
+                                context,
+                                MaterialPageRoute<dynamic>(
+                                    builder: (BuildContext context) =>
+                                        const MainScreen(index: 0)),
+                                (route) => false);
+                          } else {
+                            _toastNotification.showNotify(context,
+                                'lbTitleMsg'.tr(), 'lbErrorSignIn'.tr());
+                          }
                         }
                       },
                       child: Text(
                         'btnSignIn'.tr(),
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 17,
                             fontWeight: FontWeight.normal,
